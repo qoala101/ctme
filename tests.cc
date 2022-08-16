@@ -18,13 +18,18 @@ void Test2VectorsInt() {
 
   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{});
 
-  auto value = Expression::SEvaluateCellValue<0, 0>(a_values, b_values);
+  // using Expression = Mat<2, 3, MultiplyByMat<3, 2, MultiplyByMat<2, 4>>>;
+  // using Expression = Mat<2, 3, Mult<Mat<3, 2, Mult<Mat<2, 4>>>>>;
+
+  auto value = 0;
+
+  value = Expression::EvaluateCellValue<0, 0>(a_values, b_values);
   assert(value == 832);
-  value = Expression::SEvaluateCellValue<0, 1>(a_values, b_values);
+  value = Expression::EvaluateCellValue<0, 1>(a_values, b_values);
   assert(value == 868);
-  value = Expression::SEvaluateCellValue<1, 0>(a_values, b_values);
+  value = Expression::EvaluateCellValue<1, 0>(a_values, b_values);
   assert(value == 1039);
-  value = Expression::SEvaluateCellValue<1, 1>(a_values, b_values);
+  value = Expression::EvaluateCellValue<1, 1>(a_values, b_values);
   assert(value == 1084);
 }
 
@@ -183,10 +188,10 @@ void Test2ArraysInt() {
 
   using Expr = decltype(Mat<2, 3>{} * Mat<3, 2>{});
 
-  static_assert(Expr::SEvaluateCellValue<0, 0>(a_values, b_values) == 832);
-  static_assert(Expr::SEvaluateCellValue<0, 1>(a_values, b_values) == 868);
-  static_assert(Expr::SEvaluateCellValue<1, 0>(a_values, b_values) == 1039);
-  static_assert(Expr::SEvaluateCellValue<1, 1>(a_values, b_values) == 1084);
+  static_assert(Expr::EvaluateCellValue<0, 0>(a_values, b_values) == 832);
+  static_assert(Expr::EvaluateCellValue<0, 1>(a_values, b_values) == 868);
+  static_assert(Expr::EvaluateCellValue<1, 0>(a_values, b_values) == 1039);
+  static_assert(Expr::EvaluateCellValue<1, 1>(a_values, b_values) == 1084);
 }
 
 // void Test2ArraysFloat() {
@@ -247,51 +252,51 @@ void Test2ArraysInt() {
 //                     a_values, b_values, c_values) == 76518);
 // }
 
-// void Test3ArraysIntFloatDouble() {
-//   constexpr auto a_values = std::array<std::array<int, 3>, 2>{
-//       std::array<int, 3>{11, 12, 13}, std::array<int, 3>{14, 15, 16}};
-//   constexpr auto b_values = std::array<std::array<float, 2>, 3>{
-//       std::array<float, 2>{21.1, 22.1}, std::array<float, 2>{23.1, 24.1},
-//       std::array<float, 2>{25.1, 26.1}};
-//   constexpr auto c_values = std::array<std::array<double, 4>, 2>{
-//       std::array<double, 4>{31.1, 32.1, 33.1, 34.1},
-//       std::array<double, 4>{35.1, 36.1, 37.1, 38.1}};
+void Test3ArraysIntFloatDouble() {
+  constexpr auto a_values = std::array<std::array<int, 3>, 2>{
+      std::array<int, 3>{11, 12, 13}, std::array<int, 3>{14, 15, 16}};
+  constexpr auto b_values = std::array<std::array<float, 2>, 3>{
+      std::array<float, 2>{21.1, 22.1}, std::array<float, 2>{23.1, 24.1},
+      std::array<float, 2>{25.1, 26.1}};
+  constexpr auto c_values = std::array<std::array<double, 4>, 2>{
+      std::array<double, 4>{31.1, 32.1, 33.1, 34.1},
+      std::array<double, 4>{35.1, 36.1, 37.1, 38.1}};
 
-//   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
+  using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{});
 
-//   static_assert(expression.GetRow<0>().GetCol<0>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 56580);
-//   static_assert(expression.GetRow<0>().GetCol<0>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 56581);
-//   static_assert(expression.GetRow<0>().GetCol<1>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 58287);
-//   static_assert(expression.GetRow<0>().GetCol<1>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 58288);
-//   static_assert(expression.GetRow<0>().GetCol<2>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 59994);
-//   static_assert(expression.GetRow<0>().GetCol<2>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 59995);
-//   static_assert(expression.GetRow<0>().GetCol<3>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 61701);
-//   static_assert(expression.GetRow<0>().GetCol<3>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 61702);
-//   static_assert(expression.GetRow<1>().GetCol<0>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 70659);
-//   static_assert(expression.GetRow<1>().GetCol<0>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 70660);
-//   static_assert(expression.GetRow<1>().GetCol<1>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 72791);
-//   static_assert(expression.GetRow<1>().GetCol<1>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 72792);
-//   static_assert(expression.GetRow<1>().GetCol<2>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 74923);
-//   static_assert(expression.GetRow<1>().GetCol<2>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 74924);
-//   static_assert(expression.GetRow<1>().GetCol<3>().EvaluateCellValue(
-//                     a_values, b_values, c_values) > 77055);
-//   static_assert(expression.GetRow<1>().GetCol<3>().EvaluateCellValue(
-//                     a_values, b_values, c_values) < 77056);
-// }
+  static_assert(Expression::EvaluateCellValue<0, 0>(a_values, b_values,
+                                                    c_values) > 56580);
+  static_assert(Expression::EvaluateCellValue<0, 0>(a_values, b_values,
+                                                    c_values) < 56581);
+  static_assert(Expression::EvaluateCellValue<0, 1>(a_values, b_values,
+                                                    c_values) > 58287);
+  static_assert(Expression::EvaluateCellValue<0, 1>(a_values, b_values,
+                                                    c_values) < 58288);
+  static_assert(Expression::EvaluateCellValue<0, 2>(a_values, b_values,
+                                                    c_values) > 59994);
+  static_assert(Expression::EvaluateCellValue<0, 2>(a_values, b_values,
+                                                    c_values) < 59995);
+  static_assert(Expression::EvaluateCellValue<0, 3>(a_values, b_values,
+                                                    c_values) > 61701);
+  static_assert(Expression::EvaluateCellValue<0, 3>(a_values, b_values,
+                                                    c_values) < 61702);
+  static_assert(Expression::EvaluateCellValue<1, 0>(a_values, b_values,
+                                                    c_values) > 70659);
+  static_assert(Expression::EvaluateCellValue<1, 0>(a_values, b_values,
+                                                    c_values) < 70660);
+  static_assert(Expression::EvaluateCellValue<1, 1>(a_values, b_values,
+                                                    c_values) > 72791);
+  static_assert(Expression::EvaluateCellValue<1, 1>(a_values, b_values,
+                                                    c_values) < 72792);
+  static_assert(Expression::EvaluateCellValue<1, 2>(a_values, b_values,
+                                                    c_values) > 74923);
+  static_assert(Expression::EvaluateCellValue<1, 2>(a_values, b_values,
+                                                    c_values) < 74924);
+  static_assert(Expression::EvaluateCellValue<1, 3>(a_values, b_values,
+                                                    c_values) > 77055);
+  static_assert(Expression::EvaluateCellValue<1, 3>(a_values, b_values,
+                                                    c_values) < 77056);
+}
 
 // void Test1Vector1Array() {
 //   const auto a_values = std::vector<std::vector<int>>{
