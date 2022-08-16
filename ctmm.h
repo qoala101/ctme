@@ -151,6 +151,11 @@ struct ColExpression {
     return sum;
   }
 
+  template <typename... Args>
+  constexpr auto GetVal(const Args&... args) const {
+    return GetVal<sizeof...(args) - 1>(args...);
+  }
+
   LeftMat left_mat_{};
   RightMat right_mat_{};
 };
