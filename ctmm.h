@@ -8,27 +8,11 @@
 #include <vector>
 
 namespace ctmm {
-template <int Index, typename... Args>
-static constexpr auto GetArg(const Args&... args) -> const auto& {
-  return std::get<Index>(std::tie(args...));
-}
-
 template <int Rows, int Cols, int RowIndex, int ColIndex>
 struct Col {
-  // template <typename ClientMat>
-  // constexpr auto GetVal(const ClientMat& t) const {
-  //   // std::cout << "GetClientVal " << RowIndex << " " << ColIndex << " = " <<
-  //   // t[RowIndex][ColIndex] << "\n";
-  //   return t[RowIndex][ColIndex];
-  // }
-
-  template <int ContainerIndex, typename ...Args>
-  constexpr auto GetVal(const Args& ...args) const {
-    // std::cout << "GetClientVal " << RowIndex << " " << ColIndex << " = "
-    // <<
-    // t[RowIndex][ColIndex] << "\n";
-    return GetArg<ContainerIndex>(args...)[RowIndex][ColIndex];
-    // return 0;
+  template <int ContainerIndex, typename... Args>
+  constexpr auto GetVal(const Args&... args) const {
+    return std::get<ContainerIndex>(std::tie(args...))[RowIndex][ColIndex];
   }
 };
 
@@ -44,6 +28,7 @@ template <int Rows, int Cols>
 struct Mat {
   static const constinit auto kRows = Rows;
   static const constinit auto kCols = Cols;
+  static const constinit auto kContainers = 1;
 
   template <int RowIndex>
   using RowType = Row<Rows, Cols, RowIndex>;
@@ -63,25 +48,15 @@ struct Iterator {
       : left_mat_{std::move(left_mat)},
         right_mat_{std::move(right_mat)},
 
-        sum_{TEMP(args...) +
+        sum_{left_mat_.template GetRow<RowIndex>()
+                     .template GetCol<Index>()
+                     .template GetVal<ContainerIndex - RightMat::kContainers>(args...) *
+                 right_mat_.template GetRow<Index>()
+                     .template GetCol<ColIndex>()
+                     .template GetVal<ContainerIndex>(args...) +
              Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex,
                       Index - 1>{left_mat_, right_mat_, args...}
                  .sum_} {}
-
-  template <typename... Args>
-  constexpr auto TEMP(const Args&... args) const -> int {
-    // std::cout << "Multiplying " <<
-    auto a =
-        left_mat_.template GetRow<RowIndex>().template GetCol<Index>().template GetVal<ContainerIndex - 1>(
-            args...);
-    auto b =
-        right_mat_.template GetRow<Index>().template GetCol<ColIndex>().template GetVal<ContainerIndex>(args...);
-    auto res = a * b;
-
-    // std::cout << a << " * " << b << " = " << res << "\n";
-    return res;
-    // return 0;
-  }
 
   LeftMat left_mat_{};
   RightMat right_mat_{};
@@ -94,18 +69,7 @@ template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex,
 struct Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex, -1> {
   template <typename... Args>
   constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
-                              const Args&... args)
-      : sum_{0} {}
-
-  int sum_{};
-};
-
-template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
-struct Iterator<LeftMat, RightMat, RowIndex, ColIndex, -1, -1> {
-  template <typename... Args>
-  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
-                              const Args&... args)
-      : sum_{0} {}
+                              const Args&... args) {}
 
   int sum_{};
 };
@@ -115,40 +79,11 @@ struct ColExpression {
   constexpr explicit ColExpression(LeftMat left_mat, RightMat right_mat)
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
-  // template <typename... Args>
-  // constexpr auto GetVal(const Args&... args) const {
-  //   // std::cout << "GetMatrixVal " << RowIndex << " " << ColIndex << "{\n";
-  //   auto sum = 0;
-
-  //   sum = Iterator<LeftMat, RightMat, RowIndex, ColIndex, sizeof...(args) -
-  //   1,
-  //                  LeftMat::kCols - 1>{left_mat_, right_mat_, args...}
-  //             .sum_;
-
-  //   // std::cout << "} GetMatrixVal " << RowIndex << " " << ColIndex << " = "
-  //   <<
-  //   // sum << "\n";
-
-  //   // std::cout << "SUM: " << sum << "\n";
-
-  //   return sum;
-  // }
-
   template <int ContainerIndex, typename... Args>
   constexpr auto GetVal(const Args&... args) const {
-    // std::cout << "GetMatrixVal " << RowIndex << " " << ColIndex << "{\n";
-    auto sum = 0;
-
-    sum = Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex,
-                   LeftMat::kCols - 1>{left_mat_, right_mat_, args...}
-              .sum_;
-
-    // std::cout << "} GetMatrixVal " << RowIndex << " " << ColIndex << " = " <<
-    // sum << "\n";
-
-    // std::cout << "SUM: " << sum << "\n";
-
-    return sum;
+    return Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex,
+                    LeftMat::kCols - 1>{left_mat_, right_mat_, args...}
+        .sum_;
   }
 
   template <typename... Args>
@@ -177,9 +112,11 @@ struct RowExpression {
 
 template <typename LeftMat, typename RightMat>
 struct MatExpression {
+  static_assert(LeftMat::kCols == RightMat::kRows);
+
   static const constinit auto kRows = LeftMat::kRows;
   static const constinit auto kCols = RightMat::kCols;
-  static_assert(LeftMat::kCols == RightMat::kRows);
+  static const constinit auto kContainers = LeftMat::kContainers + RightMat::kContainers;
 
   template <int RowIndex>
   using RowType = RowExpression<LeftMat, RightMat, RowIndex>;
