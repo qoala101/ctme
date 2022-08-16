@@ -42,15 +42,14 @@ struct Mat {
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex,
           int Index>
 struct Iterator {
-  template <typename... Args, typename ClientMat>
-  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
-                              const ClientMat& t, const Args&... args)
+  template <typename... Args>
+  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat, const Args&... args)
       : left_mat_{std::move(left_mat)},
         right_mat_{std::move(right_mat)},
 
-        sum_{TEMP(t, args...) +
+        sum_{TEMP(args...) +
              Iterator<LeftMat, RightMat, RowIndex, ColIndex, Index - 1>{
-                 left_mat_, right_mat_, t, args...}
+                 left_mat_, right_mat_, args...}
                  .sum_} {}
 
   template <typename... Args, typename ClientMat>
@@ -76,9 +75,8 @@ struct Iterator {
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
 struct Iterator<LeftMat, RightMat, RowIndex, ColIndex, -1> {
-  template <typename... Args, typename ClientMat>
-  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
-                              const ClientMat& t, const Args&... args)
+  template <typename... Args>
+  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat, const Args&... args)
       : sum_{0} {}
 
   int sum_{};
@@ -89,14 +87,14 @@ struct ColExpression {
   constexpr explicit ColExpression(LeftMat left_mat, RightMat right_mat)
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
-  template <typename... Args, typename ClientMat>
-  constexpr auto GetVal(const ClientMat& t, const Args&... args) const {
+  template <typename... Args>
+  constexpr auto GetVal(const Args&... args) const {
     // std::cout << "GetMatrixVal " << RowIndex << " " << ColIndex << "{\n";
     auto sum = 0;
 
     sum =
         Iterator<LeftMat, RightMat, RowIndex, ColIndex, LeftMat::kCols - 1>{
-            left_mat_, right_mat_, t, args...}
+            left_mat_, right_mat_, args...}
             .sum_;
 
     // std::cout << "} GetMatrixVal " << RowIndex << " " << ColIndex << " = " <<
