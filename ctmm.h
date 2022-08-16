@@ -7,15 +7,12 @@
 #include <vector>
 
 namespace ctmm {
-using ClientVal = int;
-using ClientVec = std::vector<ClientVal>;
-using ClientMat = std::vector<ClientVec>;
-
 template <int Rows, int Cols, int RowIndex, int ColIndex>
 struct Col {
   // constexpr explicit Col(const ClientMat& client_mat) :
   // client_mat_{client_mat} {}
 
+  template<typename ClientMat>
   constexpr auto GetVal(const ClientMat& t) const {
     // std::cout << "GetClientVal " << RowIndex << " " << ColIndex << " = " << t[RowIndex][ColIndex] << "\n";
     return t[RowIndex][ColIndex];
@@ -63,7 +60,7 @@ struct Mat {
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex,
           int Index>
 struct Iterator {
-  template <typename... Args>
+  template <typename... Args, typename ClientMat>
   constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
                               const ClientMat& t, const Args&... args)
       : left_mat_{std::move(left_mat)},
@@ -74,8 +71,8 @@ struct Iterator {
                  left_mat_, right_mat_, t, args...}
                  .sum_} {}
 
-  template <typename... Args>
-  auto TEMP(const ClientMat& t, const Args&... args) const -> int {
+  template <typename... Args, typename ClientMat>
+  constexpr auto TEMP(const ClientMat& t, const Args&... args) const -> int {
     // std::cout << "Multiplying " <<
     auto a =
         left_mat_.template GetRow<RowIndex>().template GetCol<Index>().GetVal(
@@ -97,7 +94,7 @@ struct Iterator {
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
 struct Iterator<LeftMat, RightMat, RowIndex, ColIndex, -1> {
-  template <typename... Args>
+  template <typename... Args, typename ClientMat>
   constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
                               const ClientMat& t, const Args&... args)
       : sum_{0} {}
@@ -110,7 +107,7 @@ struct ColExpression {
   constexpr explicit ColExpression(LeftMat left_mat, RightMat right_mat)
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
-  template <typename... Args>
+  template <typename... Args, typename ClientMat>
   constexpr auto GetVal(const ClientMat& t, const Args&... args) const {
     // std::cout << "GetMatrixVal " << RowIndex << " " << ColIndex << "{\n";
     auto sum = 0;
