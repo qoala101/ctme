@@ -12,23 +12,30 @@ using ClientMat = std::vector<ClientVec>;
 
 template <int Rows, int Cols, int RowIndex, int ColIndex>
 struct Col {
-  explicit Col(const ClientMat& client_mat) : client_mat_{client_mat} {}
+  // constexpr explicit Col(const ClientMat& client_mat) :
+  // client_mat_{client_mat} {}
 
-  auto GetVal() const { return client_mat_[RowIndex][ColIndex]; }
+  constexpr auto GetVal(const ClientMat &t) const {
+    return t[RowIndex][ColIndex];
+    // return 0;
+  }
 
-  const ClientMat& client_mat_;
+  // const ClientMat& client_mat_;
 };
 
 template <int Rows, int Cols, int RowIndex>
 struct Row {
-  explicit Row(const ClientMat& client_mat) : client_mat_{client_mat} {}
+  // constexpr explicit Row(const ClientMat& client_mat) :
+  // client_mat_{client_mat} {}
 
   template <int ColIndex>
-  auto GetCol() const {
-    return Col<Rows, Cols, RowIndex, ColIndex>{client_mat_};
+  constexpr auto GetCol() const {
+    return Col<Rows, Cols, RowIndex, ColIndex>{
+        // client_mat_
+    };
   }
 
-  const ClientMat& client_mat_;
+  // const ClientMat& client_mat_;
 };
 
 template <int Rows, int Cols>
@@ -39,14 +46,17 @@ struct Mat {
   template <int RowIndex>
   using RowType = Row<Rows, Cols, RowIndex>;
 
-  explicit Mat(const ClientMat& client_mat) : client_mat_{client_mat} {}
+  // constexpr explicit Mat(const ClientMat& client_mat) :
+  // client_mat_{client_mat} {}
 
   template <int RowIndex>
-  auto GetRow() const {
-    return Row<Rows, Cols, RowIndex>{client_mat_};
+  constexpr auto GetRow() const {
+    return Row<Rows, Cols, RowIndex>{
+        // client_mat_
+    };
   }
 
-  const ClientMat& client_mat_;
+  // const ClientMat& client_mat_;
 };
 
 // template <typename T, int RowsLeft, int Common, int ColsRight, int RowIndex,
@@ -65,16 +75,17 @@ struct Mat {
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
 struct ColExpression {
-  explicit ColExpression(LeftMat left_mat, RightMat right_mat)
+  constexpr explicit ColExpression(LeftMat left_mat, RightMat right_mat)
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
-  auto GetVal() const {
+  template <typename... Args>
+  constexpr auto GetVal(const ClientMat &t, const Args&... args) const {
     auto sum = 0;
 
     for (auto i = 0; i < LeftMat::kCols; ++i) {
       sum +=
-          left_mat_.template GetRow<RowIndex>().template GetCol</*i*/0>().GetVal() *
-          right_mat_.template GetRow</*i*/0>().template GetCol<ColIndex>().GetVal();
+          left_mat_.template GetRow<RowIndex>().template GetCol<0>().GetVal(args...) *
+          right_mat_.template GetRow<0>().template GetCol<ColIndex>().GetVal(t);
     }
 
     return sum;
@@ -86,11 +97,11 @@ struct ColExpression {
 
 template <typename LeftMat, typename RightMat, int RowIndex>
 struct RowExpression {
-  explicit RowExpression(LeftMat left_mat, RightMat right_mat)
+  constexpr explicit RowExpression(LeftMat left_mat, RightMat right_mat)
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
   template <int ColIndex>
-  auto GetCol() const {
+  constexpr auto GetCol() const {
     return ColExpression<LeftMat, RightMat, RowIndex, ColIndex>{left_mat_,
                                                                 right_mat_};
   }
@@ -108,11 +119,11 @@ struct MatExpression {
   template <int RowIndex>
   using RowType = RowExpression<LeftMat, RightMat, RowIndex>;
 
-  explicit MatExpression(LeftMat left_mat, RightMat right_mat)
+  constexpr explicit MatExpression(LeftMat left_mat, RightMat right_mat)
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
   template <int RowIndex>
-  auto GetRow() const {
+  constexpr auto GetRow() const {
     return RowExpression<LeftMat, RightMat, RowIndex>{left_mat_, right_mat_};
   }
 
@@ -120,7 +131,8 @@ struct MatExpression {
   RightMat right_mat_{};
 };
 
-[[nodiscard]] auto operator*(const auto& left_mat, const auto& right_mat) {
+[[nodiscard]] constexpr auto operator*(const auto& left_mat,
+                                       const auto& right_mat) {
   return MatExpression{left_mat, right_mat};
 }
 }  // namespace ctmm
