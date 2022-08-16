@@ -238,57 +238,61 @@ template <int RowIndex, int ColIndex, typename... Inputs>
       .template EvaluateValue(inputs...);
 }
 
-template <typename Expression, typename ResultType, int RowIndex, int ColIndex>
-struct Evaluator2 {
+template <typename ResultType, int RowIndex, int ColIndex>
+struct MatrixEvaluator {
   template <typename... Inputs>
-  constexpr explicit Evaluator2(
-      const Expression &expression,
-      std::array<std::array<ResultType, Expression::kNumCols>,
-                 Expression::kNumRows> &result,
+  constexpr explicit MatrixEvaluator(
+      const concepts::Mat auto &mat,
+      std::array<std::array<ResultType,
+                            std::remove_reference_t<decltype(mat)>::kNumCols>,
+                 std::remove_reference_t<decltype(mat)>::kNumRows> &result,
       const Inputs &...inputs) {
     result[RowIndex][ColIndex] =
-        EvaluateCell<RowIndex, ColIndex>(expression, inputs...);
-    Evaluator2<Expression, ResultType, RowIndex, ColIndex - 1>{
-        expression, result, inputs...};
+        EvaluateCell<RowIndex, ColIndex>(mat, inputs...);
+    MatrixEvaluator<ResultType, RowIndex, ColIndex - 1>{mat, result, inputs...};
   }
 };
 
-template <typename Expression, typename ResultType, int RowIndex>
-struct Evaluator2<Expression, ResultType, RowIndex, 0> {
+template <typename ResultType, int RowIndex>
+struct MatrixEvaluator<ResultType, RowIndex, 0> {
   template <typename... Inputs>
-  constexpr explicit Evaluator2(
-      const Expression &expression,
-      std::array<std::array<ResultType, Expression::kNumCols>,
-                 Expression::kNumRows> &result,
+  constexpr explicit MatrixEvaluator(
+      const concepts::Mat auto &mat,
+      std::array<std::array<ResultType,
+                            std::remove_reference_t<decltype(mat)>::kNumCols>,
+                 std::remove_reference_t<decltype(mat)>::kNumRows> &result,
       const Inputs &...inputs) {
-    result[RowIndex][0] = EvaluateCell<RowIndex, 0>(expression, inputs...);
-    Evaluator2<Expression, ResultType, RowIndex - 1, Expression::kNumCols - 1>{
-        expression, result, inputs...};
+    result[RowIndex][0] = EvaluateCell<RowIndex, 0>(mat, inputs...);
+    MatrixEvaluator<ResultType, RowIndex - 1,
+                    std::remove_reference_t<decltype(mat)>::kNumCols - 1>{
+        mat, result, inputs...};
   }
 };
 
-template <typename Expression, typename ResultType>
-struct Evaluator2<Expression, ResultType, 0, 0> {
+template <typename ResultType>
+struct MatrixEvaluator<ResultType, 0, 0> {
   template <typename... Inputs>
-  constexpr explicit Evaluator2(
-      const Expression &expression,
-      std::array<std::array<ResultType, Expression::kNumCols>,
-                 Expression::kNumRows> &result,
+  constexpr explicit MatrixEvaluator(
+      const concepts::Mat auto &mat,
+      std::array<std::array<ResultType,
+                            std::remove_reference_t<decltype(mat)>::kNumCols>,
+                 std::remove_reference_t<decltype(mat)>::kNumRows> &result,
       const Inputs &...inputs) {
-    result[0][0] = EvaluateCell<0, 0>(expression, inputs...);
+    result[0][0] = EvaluateCell<0, 0>(mat, inputs...);
   }
 };
 
-template <typename Expression, typename... Inputs>
-[[nodiscard]] constexpr auto EvaluateMatrix(const Expression &expression,
+template <typename... Inputs>
+[[nodiscard]] constexpr auto EvaluateMatrix(const concepts::Mat auto &mat,
                                             const Inputs &...inputs) {
-  using ResultType = decltype(EvaluateCell<0, 0>(expression, inputs...));
+  using MatType = std::remove_reference_t<decltype(mat)>;
+  using ResultType = decltype(EvaluateCell<0, 0>(mat, inputs...));
 
-  auto result = std::array<std::array<ResultType, Expression::kNumCols>,
-                           Expression::kNumRows>{};
+  auto result = std::array<std::array<ResultType, MatType::kNumCols>,
+                           MatType::kNumRows>{};
 
-  Evaluator2<Expression, ResultType, Expression::kNumRows - 1,
-             Expression::kNumCols - 1>{expression, result, inputs...};
+  MatrixEvaluator<ResultType, MatType::kNumRows - 1, MatType::kNumCols - 1>{
+      mat, result, inputs...};
 
   return result;
 }
