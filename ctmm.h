@@ -41,6 +41,11 @@ class Cell {
     return std::get<InputIndex>(std::tie(inputs...))[RowIndex][ColIndex];
   }
 
+  template <typename... Inputs>
+  [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
+    return EvaluateValue<0>(inputs...);
+  }
+
  private:
   template <int, int, int>
   friend class Row;
@@ -91,22 +96,15 @@ template <int RowIndex, int ColIndex, typename... Inputs>
 }
 
 template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
-          int ColIndex, int InputIndex, int Index>
-class Iterator {
+          int ColIndex, int InputIndex, int ProductIndex>
+class CellValueEvaluator {
  public:
   template <typename... Inputs>
-  [[nodiscard]] static constexpr auto Sum(LeftMat left_mat_,
-                                          RightMat right_mat_,
-                                          const Inputs &...inputs) {
-    return left_mat_.template GetRow<RowIndex>()
-                   .template GetCol<Index>()
-                   .template EvaluateValue<InputIndex - RightMat::kNumInputs>(
-                       inputs...) *
-               right_mat_.template GetRow<Index>()
-                   .template GetCol<ColIndex>()
-                   .template EvaluateValue<InputIndex>(inputs...) +
-           Iterator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
-                    Index - 1>::Sum(left_mat_, right_mat_, inputs...);
+  [[nodiscard]] static constexpr auto Evaluate(LeftMat left_mat,
+                                               RightMat right_mat,
+                                               const Inputs &...inputs) {
+    return EvaluateCurrentProduct(left_mat, right_mat, inputs...) +
+           EvaluateNextProduct(left_mat, right_mat, inputs...);
   }
 
  private:
@@ -114,23 +112,57 @@ class Iterator {
   friend class ExprCell;
 
   template <concepts::Mat, concepts::Mat, int, int, int, int>
-  friend class Iterator;
+  friend class CellValueEvaluator;
+
+  template <typename... Inputs>
+  [[nodiscard]] static constexpr auto EvaluateValueFromLeftMat(
+      const LeftMat &left_mat, const Inputs &...inputs) {
+    return left_mat.template GetRow<RowIndex>()
+        .template GetCol<ProductIndex>()
+        .template EvaluateValue<InputIndex - RightMat::kNumInputs>(inputs...);
+  }
+
+  template <typename... Inputs>
+  [[nodiscard]] static constexpr auto EvaluateValueFromRightMat(
+      const RightMat &right_mat, const Inputs &...inputs) {
+    return right_mat.template GetRow<ProductIndex>()
+        .template GetCol<ColIndex>()
+        .template EvaluateValue<InputIndex>(inputs...);
+  }
+
+  template <typename... Inputs>
+  [[nodiscard]] static constexpr auto EvaluateCurrentProduct(
+      const LeftMat &left_mat, const RightMat &right_mat,
+      const Inputs &...inputs) {
+    return EvaluateValueFromLeftMat(left_mat, inputs...) *
+           EvaluateValueFromRightMat(right_mat, inputs...);
+  }
+
+  template <typename... Inputs>
+  [[nodiscard]] static constexpr auto EvaluateNextProduct(
+      const LeftMat &left_mat, const RightMat &right_mat,
+      const Inputs &...inputs) {
+    return CellValueEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
+                              ProductIndex - 1>::Evaluate(left_mat, right_mat,
+                                                          inputs...);
+  }
 };
 
 template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
           int ColIndex, int InputIndex>
-class Iterator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex, -1> {
+class CellValueEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
+                         -1> {
  public:
   template <typename... Inputs>
-  [[nodiscard]] static constexpr auto Sum(LeftMat left_mat_,
-                                          RightMat right_mat_,
-                                          const Inputs &...inputs) {
+  [[nodiscard]] static constexpr auto Evaluate(LeftMat left_mat_,
+                                               RightMat right_mat_,
+                                               const Inputs &...inputs) {
     return decltype(left_mat_.template GetRow<0>()
                         .template GetCol<0>()
-                        .template EvaluateValue<1>(inputs...) *
+                        .template EvaluateValue(inputs...) *
                     right_mat_.template GetRow<0>()
                         .template GetCol<0>()
-                        .template EvaluateValue<1>(inputs...)){};
+                        .template EvaluateValue(inputs...)){};
   }
 
  private:
@@ -138,7 +170,7 @@ class Iterator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex, -1> {
   friend class ExprCell;
 
   template <concepts::Mat, concepts::Mat, int, int, int, int>
-  friend class Iterator;
+  friend class CellValueEvaluator;
 };
 
 template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
@@ -150,9 +182,10 @@ class ExprCell {
  public:
   template <int InputIndex, typename... Inputs>
   [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
-    return Iterator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
-                    LeftMat::kNumCols - 1>::Sum(left_mat_, right_mat_,
-                                                inputs...);
+    return CellValueEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
+                              LeftMat::kNumCols - 1>::Evaluate(left_mat_,
+                                                               right_mat_,
+                                                               inputs...);
   }
 
   template <typename... Inputs>
@@ -225,38 +258,38 @@ class ExprMat {
 }
 
 template <typename Expression, typename ResultType, int RowIndex, int ColIndex>
-struct Evaluator {
+struct Evaluator2 {
   template <typename... Inputs>
-  constexpr explicit Evaluator(
+  constexpr explicit Evaluator2(
       const Expression &expression,
       std::array<std::array<ResultType, Expression::kNumCols>,
                  Expression::kNumRows> &result,
       const Inputs &...inputs) {
     result[RowIndex][ColIndex] =
         EvaluateCell<RowIndex, ColIndex>(expression, inputs...);
-    Evaluator<Expression, ResultType, RowIndex, ColIndex - 1>{
+    Evaluator2<Expression, ResultType, RowIndex, ColIndex - 1>{
         expression, result, inputs...};
   }
 };
 
 template <typename Expression, typename ResultType, int RowIndex>
-struct Evaluator<Expression, ResultType, RowIndex, 0> {
+struct Evaluator2<Expression, ResultType, RowIndex, 0> {
   template <typename... Inputs>
-  constexpr explicit Evaluator(
+  constexpr explicit Evaluator2(
       const Expression &expression,
       std::array<std::array<ResultType, Expression::kNumCols>,
                  Expression::kNumRows> &result,
       const Inputs &...inputs) {
     result[RowIndex][0] = EvaluateCell<RowIndex, 0>(expression, inputs...);
-    Evaluator<Expression, ResultType, RowIndex - 1, Expression::kNumCols - 1>{
+    Evaluator2<Expression, ResultType, RowIndex - 1, Expression::kNumCols - 1>{
         expression, result, inputs...};
   }
 };
 
 template <typename Expression, typename ResultType>
-struct Evaluator<Expression, ResultType, 0, 0> {
+struct Evaluator2<Expression, ResultType, 0, 0> {
   template <typename... Inputs>
-  constexpr explicit Evaluator(
+  constexpr explicit Evaluator2(
       const Expression &expression,
       std::array<std::array<ResultType, Expression::kNumCols>,
                  Expression::kNumRows> &result,
@@ -273,8 +306,8 @@ template <typename Expression, typename... Inputs>
   auto result = std::array<std::array<ResultType, Expression::kNumCols>,
                            Expression::kNumRows>{};
 
-  Evaluator<Expression, ResultType, Expression::kNumRows - 1,
-            Expression::kNumCols - 1>{expression, result, inputs...};
+  Evaluator2<Expression, ResultType, Expression::kNumRows - 1,
+             Expression::kNumCols - 1>{expression, result, inputs...};
 
   return result;
 }
