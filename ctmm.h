@@ -46,9 +46,15 @@ struct Iterator {
   constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
                               const Args &...args)
       : left_mat_{std::move(left_mat)},
-        right_mat_{std::move(right_mat)},
+        right_mat_{std::move(right_mat)}
+                  {}
 
-        sum_{left_mat_.template GetRow<RowIndex>()
+  LeftMat left_mat_{};
+  RightMat right_mat_{};
+
+  template <typename... Args>
+  [[nodiscard]] constexpr auto Sum(const Args &...args) const {
+    return left_mat_.template GetRow<RowIndex>()
                      .template GetCol<Index>()
                      .template GetVal<ContainerIndex - RightMat::kContainers>(
                          args...) *
@@ -56,23 +62,22 @@ struct Iterator {
                      .template GetCol<ColIndex>()
                      .template GetVal<ContainerIndex>(args...) +
              Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex,
-                      Index - 1>{left_mat_, right_mat_, args...}
-                 .sum_} {}
-
-  LeftMat left_mat_{};
-  RightMat right_mat_{};
-
-  int sum_{};
+                      Index - 1>{left_mat_, right_mat_}
+                 .Sum(args...);
+  }
 };
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex,
           int ContainerIndex>
 struct Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex, -1> {
   template <typename... Args>
-  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
-                              const Args &...args) {}
+  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat) {}
 
-  int sum_{};
+  template <typename... Args>
+  [[nodiscard]] constexpr auto Sum(
+                              const Args &...args) const {
+    return 0;
+  }
 };
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
@@ -83,8 +88,8 @@ struct ColExpression {
   template <int ContainerIndex, typename... Args>
   constexpr auto GetVal(const Args &...args) const {
     return Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex,
-                    LeftMat::kCols - 1>{left_mat_, right_mat_, args...}
-        .sum_;
+                    LeftMat::kCols - 1>{left_mat_, right_mat_}
+        .Sum(args...);
   }
 
   template <typename... Args>
@@ -148,38 +153,38 @@ template <int RowIndex, int ColIndex, typename... Args>
       .template GetVal(args...);
 }
 
-template <typename Expression, int RowIndex, int ColIndex>
+template <typename Expression, typename ResultType, int RowIndex, int ColIndex>
 struct Evaluator {
   template <typename... Args>
   constexpr explicit Evaluator(
       const Expression &expression,
-      std::array<std::array<int, Expression::kCols>, Expression::kRows> &result,
+      std::array<std::array<ResultType, Expression::kCols>, Expression::kRows> &result,
       const Args &...args) {
     result[RowIndex][ColIndex] =
         EvaluateCell<RowIndex, ColIndex>(expression, args...);
-    Evaluator<Expression, RowIndex, ColIndex - 1>{expression, result, args...};
+    Evaluator<Expression, ResultType, RowIndex, ColIndex - 1>{expression, result, args...};
   }
 };
 
-template <typename Expression, int RowIndex>
-struct Evaluator<Expression, RowIndex, 0> {
+template <typename Expression, typename ResultType, int RowIndex>
+struct Evaluator<Expression, ResultType, RowIndex, 0> {
   template <typename... Args>
   constexpr explicit Evaluator(
       const Expression &expression,
-      std::array<std::array<int, Expression::kCols>, Expression::kRows> &result,
+      std::array<std::array<ResultType, Expression::kCols>, Expression::kRows> &result,
       const Args &...args) {
     result[RowIndex][0] = EvaluateCell<RowIndex, 0>(expression, args...);
-    Evaluator<Expression, RowIndex - 1, Expression::kCols - 1>{expression,
+    Evaluator<Expression, ResultType, RowIndex - 1, Expression::kCols - 1>{expression,
                                                                result, args...};
   }
 };
 
-template <typename Expression>
-struct Evaluator<Expression, 0, 0> {
+template <typename Expression, typename ResultType>
+struct Evaluator<Expression, ResultType, 0, 0> {
   template <typename... Args>
   constexpr explicit Evaluator(
       const Expression &expression,
-      std::array<std::array<int, Expression::kCols>, Expression::kRows> &result,
+      std::array<std::array<ResultType, Expression::kCols>, Expression::kRows> &result,
       const Args &...args) {
     result[0][0] = EvaluateCell<0, 0>(expression, args...);
   }
@@ -188,10 +193,12 @@ struct Evaluator<Expression, 0, 0> {
 template <typename Expression, typename... Args>
 [[nodiscard]] constexpr auto EvaluateMatrix(const Expression &expression,
                                             const Args &...args) {
-  auto result =
-      std::array<std::array<int, Expression::kCols>, Expression::kRows>{};
+  using ResultType = decltype(EvaluateCell<0, 0>(expression, args...));
+  
+  auto result = std::array<std::array<ResultType, Expression::kCols>,
+                           Expression::kRows>{};
 
-  Evaluator<Expression, Expression::kRows - 1, Expression::kCols - 1>{
+  Evaluator<Expression, ResultType, Expression::kRows - 1, Expression::kCols - 1>{
       expression, result, args...};
 
   return result;
