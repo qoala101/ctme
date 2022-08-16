@@ -17,6 +17,7 @@ struct Col {
   // client_mat_{client_mat} {}
 
   constexpr auto GetVal(const ClientMat& t) const {
+    // std::cout << "GetClientVal " << RowIndex << " " << ColIndex << " = " << t[RowIndex][ColIndex] << "\n";
     return t[RowIndex][ColIndex];
   }
 
@@ -68,15 +69,25 @@ struct Iterator {
       : left_mat_{std::move(left_mat)},
         right_mat_{std::move(right_mat)},
 
-        sum_{left_mat_.template GetRow<RowIndex>()
-                     .template GetCol<Index>()
-                     .GetVal(args...) *
-                 right_mat_.template GetRow<Index>()
-                     .template GetCol<ColIndex>()
-                     .GetVal(t) +
+        sum_{TEMP(t, args...) +
              Iterator<LeftMat, RightMat, RowIndex, ColIndex, Index - 1>{
                  left_mat_, right_mat_, t, args...}
                  .sum_} {}
+
+  template <typename... Args>
+  auto TEMP(const ClientMat& t, const Args&... args) const -> int {
+    // std::cout << "Multiplying " <<
+    auto a =
+        left_mat_.template GetRow<RowIndex>().template GetCol<Index>().GetVal(
+            args...);
+    auto b =
+        right_mat_.template GetRow<Index>().template GetCol<ColIndex>().GetVal(
+            t);
+    auto res = a * b;
+
+    // std::cout << a << " * " << b << " = " << res << "\n";
+    return res;
+  }
 
   LeftMat left_mat_{};
   RightMat right_mat_{};
@@ -101,12 +112,17 @@ struct ColExpression {
 
   template <typename... Args>
   constexpr auto GetVal(const ClientMat& t, const Args&... args) const {
+    // std::cout << "GetMatrixVal " << RowIndex << " " << ColIndex << "{\n";
     auto sum = 0;
 
     sum =
-        Iterator<LeftMat, RightMat, RowIndex, ColIndex, LeftMat::kRows - 1>{
+        Iterator<LeftMat, RightMat, RowIndex, ColIndex, LeftMat::kCols - 1>{
             left_mat_, right_mat_, t, args...}
             .sum_;
+
+    // std::cout << "} GetMatrixVal " << RowIndex << " " << ColIndex << " = " << sum << "\n";
+
+    // std::cout << "SUM: " << sum << "\n";
 
     return sum;
   }
