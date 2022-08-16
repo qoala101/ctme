@@ -4,15 +4,34 @@
 #include <array>
 #include <iostream>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 namespace ctmm {
+namespace concepts {
+// template <typename T, typename... Args>
+// concept Cell = requires(const T &t, const Args &...args) {
+//   t->EvaluateValue(args...);
+// };
+
+// template <typename T>
+// concept Row = requires() {
+//   { T::kNumRows } -> std::convertible_to<int>;
+//   { T::kNumCols } -> std::convertible_to<int>;
+//   { T::kNumInputs } -> std::convertible_to<int>;
+// };
+
+template <typename T>
+concept Mat = requires() {
+  { T::kNumRows } -> std::convertible_to<int>;
+  { T::kNumCols } -> std::convertible_to<int>;
+  { T::kNumInputs } -> std::convertible_to<int>;
+};
+}  // namespace concepts
+
 template <int RowIndex, int ColIndex>
 class Cell {
-  static_assert(RowIndex >= 0);
-  static_assert(ColIndex >= 0);
-
  public:
   template <int InputIndex, typename... Inputs>
   [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
@@ -21,37 +40,50 @@ class Cell {
 
     return std::get<InputIndex>(std::tie(inputs...))[RowIndex][ColIndex];
   }
+
+ private:
+  template <int, int>
+  friend class Row;
+
+  explicit Cell() = default;
 };
 
-template <int RowIndex>
+template <int RowIndex, int NumCols>
 class Row {
-  static_assert(RowIndex >= 0);
-
  public:
   template <int ColIndex>
   [[nodiscard]] constexpr auto GetCol() const {
     static_assert(ColIndex >= 0);
+    static_assert(ColIndex < NumCols);
 
     return Cell<RowIndex, ColIndex>{};
   }
+
+ private:
+  template <int, int>
+  friend class Mat;
+
+  explicit Row() = default;
 };
 
 template <int NumRows, int NumCols>
 class Mat {
-  static_assert(NumRows > 0);
-  static_assert(NumCols > 0);
-
  public:
-  static constexpr auto kNumRows = NumRows;
-  static constexpr auto kNumCols = NumCols;
-  static constexpr auto kNumInputs = 1;
+  static constexpr int kNumRows = NumRows;
+  static constexpr int kNumCols = NumCols;
+  static constexpr int kNumInputs = 1;
 
   template <int RowIndex>
   [[nodiscard]] constexpr auto GetRow() const {
     static_assert(RowIndex >= 0);
+    static_assert(RowIndex < kNumRows);
 
-    return Row<RowIndex>{};
+    return Row<RowIndex, NumCols>{};
   }
+
+ private:
+  static_assert(NumRows > 0);
+  static_assert(NumCols > 0);
 };
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex,
@@ -99,65 +131,87 @@ struct Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex, -1> {
   }
 };
 
-template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
-struct ColExpression {
-  constexpr explicit ColExpression(LeftMat left_mat, RightMat right_mat)
-      : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
-
-  template <int ContainerIndex, typename... Args>
-  constexpr auto EvaluateValue(const Args &...args) const {
-    return Iterator<LeftMat, RightMat, RowIndex, ColIndex, ContainerIndex,
+template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
+          int ColIndex>
+class ExprCell {
+ public:
+  template <int InputIndex, typename... Inputs>
+  [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
+    return Iterator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
                     LeftMat::kNumCols - 1>{left_mat_, right_mat_}
-        .Sum(args...);
+        .Sum(inputs...);
   }
 
   template <typename... Args>
-  constexpr auto EvaluateValue(const Args &...args) const {
-    return EvaluateValue<sizeof...(args) - 1>(args...);
+  [[nodiscard]] constexpr auto EvaluateValue(const Args &...inputs) const {
+    return EvaluateValue<sizeof...(inputs) - 1>(inputs...);
   }
 
-  LeftMat left_mat_{};
-  RightMat right_mat_{};
-};
+ private:
+  template <concepts::Mat, concepts::Mat, int>
+  friend class ExprRow;
 
-template <typename LeftMat, typename RightMat, int RowIndex>
-struct RowExpression {
-  constexpr explicit RowExpression(LeftMat left_mat, RightMat right_mat)
+  constexpr explicit ExprCell(LeftMat left_mat, RightMat right_mat)
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
+  LeftMat left_mat_{};
+  RightMat right_mat_{};
+};
+
+template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex>
+class ExprRow {
+ public:
   template <int ColIndex>
-  constexpr auto GetCol() const {
-    return ColExpression<LeftMat, RightMat, RowIndex, ColIndex>{left_mat_,
-                                                                right_mat_};
+  [[nodiscard]] constexpr auto GetCol() const {
+    static_assert(ColIndex >= 0);
+    static_assert(ColIndex < RightMat::kNumCols);
+
+    return ExprCell<LeftMat, RightMat, RowIndex, ColIndex>{left_mat_,
+                                                           right_mat_};
   }
+
+ private:
+  template <concepts::Mat, concepts::Mat>
+  friend class ExprMat;
+
+  constexpr explicit ExprRow(LeftMat left_mat, RightMat right_mat)
+      : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
   LeftMat left_mat_{};
   RightMat right_mat_{};
 };
 
-template <typename LeftMat, typename RightMat>
-struct MatExpression {
+template <concepts::Mat LeftMat, concepts::Mat RightMat>
+class ExprMat {
   static_assert(LeftMat::kNumCols == RightMat::kNumRows);
 
-  static constexpr auto kNumRows = LeftMat::kNumRows;
-  static constexpr auto kNumCols = RightMat::kNumCols;
-  static constexpr auto kNumInputs = LeftMat::kNumInputs + RightMat::kNumInputs;
-
-  constexpr explicit MatExpression(LeftMat left_mat, RightMat right_mat)
-      : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
+ public:
+  static constexpr int kNumRows = LeftMat::kNumRows;
+  static constexpr int kNumCols = RightMat::kNumCols;
+  static constexpr int kNumInputs = LeftMat::kNumInputs + RightMat::kNumInputs;
 
   template <int RowIndex>
-  constexpr auto GetRow() const {
-    return RowExpression<LeftMat, RightMat, RowIndex>{left_mat_, right_mat_};
+  [[nodiscard]] constexpr auto GetRow() const {
+    static_assert(RowIndex >= 0);
+    static_assert(RowIndex < kNumRows);
+
+    return ExprRow<LeftMat, RightMat, RowIndex>{left_mat_, right_mat_};
   }
+
+ private:
+  friend constexpr auto operator*(const concepts::Mat auto &,
+                                  const concepts::Mat auto &);
+
+  constexpr explicit ExprMat(LeftMat left_mat, RightMat right_mat)
+      : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
   LeftMat left_mat_{};
   RightMat right_mat_{};
 };
 
-[[nodiscard]] constexpr auto operator*(const auto &left_mat,
-                                       const auto &right_mat) {
-  return MatExpression{left_mat, right_mat};
+[[nodiscard]] constexpr auto operator*(const concepts::Mat auto &left_mat,
+                                       const concepts::Mat auto &right_mat) {
+  return ExprMat{left_mat, right_mat};
 }
 
 template <int RowIndex, int ColIndex, typename... Args>
