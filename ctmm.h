@@ -2,6 +2,7 @@
 #define CTMM_H_
 
 #include <array>
+#include <exception>
 #include <iostream>
 #include <tuple>
 #include <type_traits>
@@ -87,14 +88,6 @@ class Mat {
   }
 };
 
-template <int RowIndex, int ColIndex, typename... Inputs>
-[[nodiscard]] constexpr auto EvaluateCell(const concepts::Mat auto &mat,
-                                          const Inputs &...inputs) {
-  return mat.template GetRow<RowIndex>()
-      .template GetCol<ColIndex>()
-      .template EvaluateValue(inputs...);
-}
-
 template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
           int ColIndex, int InputIndex, int ProductIndex>
 class CellValueEvaluator {
@@ -103,8 +96,13 @@ class CellValueEvaluator {
   [[nodiscard]] static constexpr auto Evaluate(LeftMat left_mat,
                                                RightMat right_mat,
                                                const Inputs &...inputs) {
-    return EvaluateCurrentProduct(left_mat, right_mat, inputs...) +
-           EvaluateNextProduct(left_mat, right_mat, inputs...);
+    auto result = EvaluateCurrentProduct(left_mat, right_mat, inputs...);
+
+    if constexpr (ProductIndex > 0) {
+      result += EvaluateNextProduct(left_mat, right_mat, inputs...);
+    }
+
+    return result;
   }
 
  private:
@@ -146,31 +144,6 @@ class CellValueEvaluator {
                               ProductIndex - 1>::Evaluate(left_mat, right_mat,
                                                           inputs...);
   }
-};
-
-template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
-          int ColIndex, int InputIndex>
-class CellValueEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
-                         -1> {
- public:
-  template <typename... Inputs>
-  [[nodiscard]] static constexpr auto Evaluate(LeftMat left_mat_,
-                                               RightMat right_mat_,
-                                               const Inputs &...inputs) {
-    return decltype(left_mat_.template GetRow<0>()
-                        .template GetCol<0>()
-                        .template EvaluateValue(inputs...) *
-                    right_mat_.template GetRow<0>()
-                        .template GetCol<0>()
-                        .template EvaluateValue(inputs...)){};
-  }
-
- private:
-  template <concepts::Mat, concepts::Mat, int, int>
-  friend class ExprCell;
-
-  template <concepts::Mat, concepts::Mat, int, int, int, int>
-  friend class CellValueEvaluator;
 };
 
 template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
@@ -255,6 +228,14 @@ class ExprMat {
 [[nodiscard]] constexpr auto operator*(const concepts::Mat auto &left_mat,
                                        const concepts::Mat auto &right_mat) {
   return ExprMat{left_mat, right_mat};
+}
+
+template <int RowIndex, int ColIndex, typename... Inputs>
+[[nodiscard]] constexpr auto EvaluateCell(const concepts::Mat auto &mat,
+                                          const Inputs &...inputs) {
+  return mat.template GetRow<RowIndex>()
+      .template GetCol<ColIndex>()
+      .template EvaluateValue(inputs...);
 }
 
 template <typename Expression, typename ResultType, int RowIndex, int ColIndex>
