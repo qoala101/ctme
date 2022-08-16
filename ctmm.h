@@ -13,7 +13,7 @@ namespace ctmm {
 namespace concepts {
 // template <typename T, typename... Inputs>
 // concept Cell = requires(const T &t, const Inputs &...inputs) {
-//   t->EvaluateValue(inputs...);
+//   t->EvaluateCellValue(inputs...);
 // };
 
 // template <typename T>
@@ -31,47 +31,6 @@ concept Mat = requires() {
 };
 }  // namespace concepts
 
-template <int RowIndex, int ColIndex, int NumCols>
-class Cell {
-  static_assert(ColIndex >= 0);
-  static_assert(ColIndex < NumCols);
-
- public:
-  template <int InputIndex, typename... Inputs>
-  [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
-    return std::get<InputIndex>(std::tie(inputs...))[RowIndex][ColIndex];
-  }
-
-  template <typename... Inputs>
-  [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
-    return EvaluateValue<0>(inputs...);
-  }
-
- private:
-  template <int, int, int>
-  friend class Row;
-
-  explicit Cell() = default;
-};
-
-template <int RowIndex, int NumRows, int NumCols>
-class Row {
-  static_assert(RowIndex >= 0);
-  static_assert(RowIndex < NumRows);
-
- public:
-  template <int ColIndex>
-  [[nodiscard]] constexpr auto GetCol() const {
-    return Cell<RowIndex, ColIndex, NumCols>{};
-  }
-
- private:
-  template <int, int>
-  friend class Mat;
-
-  explicit Row() = default;
-};
-
 template <int NumRows, int NumCols>
 class Mat {
   static_assert(NumRows > 0);
@@ -82,9 +41,16 @@ class Mat {
   static constexpr int kNumCols = NumCols;
   static constexpr int kNumInputs = 1;
 
-  template <int RowIndex>
-  [[nodiscard]] constexpr auto GetRow() const {
-    return Row<RowIndex, NumRows, NumCols>{};
+  template <int RowIndex, int ColIndex, int InputIndex, typename... Inputs>
+  [[nodiscard]] static constexpr auto SEvaluateCellValue(
+      const Inputs &...inputs) {
+    return std::get<InputIndex>(std::tie(inputs...))[RowIndex][ColIndex];
+  }
+
+  template <int RowIndex, int ColIndex, typename... Inputs>
+  [[nodiscard]] static constexpr auto SEvaluateCellValue(
+      const Inputs &...inputs) {
+    return SEvaluateCellValue<0>(inputs...);
   }
 };
 
@@ -93,13 +59,11 @@ template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
 class CellValueEvaluator {
  public:
   template <typename... Inputs>
-  [[nodiscard]] static constexpr auto Evaluate(LeftMat left_mat,
-                                               RightMat right_mat,
-                                               const Inputs &...inputs) {
-    auto result = EvaluateCurrentProduct(left_mat, right_mat, inputs...);
+  [[nodiscard]] static constexpr auto SEvaluate(const Inputs &...inputs) {
+    auto result = SEvaluateCurrentProduct(inputs...);
 
     if constexpr (ProductIndex > 0) {
-      result += EvaluateNextProduct(left_mat, right_mat, inputs...);
+      result += SEvaluateNextProduct(inputs...);
     }
 
     return result;
@@ -113,91 +77,32 @@ class CellValueEvaluator {
   friend class CellValueEvaluator;
 
   template <typename... Inputs>
-  [[nodiscard]] static constexpr auto EvaluateValueFromLeftMat(
-      const LeftMat &left_mat, const Inputs &...inputs) {
-    return left_mat.template GetRow<RowIndex>()
-        .template GetCol<ProductIndex>()
-        .template EvaluateValue<InputIndex - RightMat::kNumInputs>(inputs...);
-  }
-
-  template <typename... Inputs>
-  [[nodiscard]] static constexpr auto EvaluateValueFromRightMat(
-      const RightMat &right_mat, const Inputs &...inputs) {
-    return right_mat.template GetRow<ProductIndex>()
-        .template GetCol<ColIndex>()
-        .template EvaluateValue<InputIndex>(inputs...);
-  }
-
-  template <typename... Inputs>
-  [[nodiscard]] static constexpr auto EvaluateCurrentProduct(
-      const LeftMat &left_mat, const RightMat &right_mat,
+  [[nodiscard]] static constexpr auto SEvaluateCellValueFromLeftMat(
       const Inputs &...inputs) {
-    return EvaluateValueFromLeftMat(left_mat, inputs...) *
-           EvaluateValueFromRightMat(right_mat, inputs...);
+    return LeftMat::template SEvaluateCellValue<
+        RowIndex, ProductIndex, InputIndex - RightMat::kNumInputs>(inputs...);
   }
 
   template <typename... Inputs>
-  [[nodiscard]] static constexpr auto EvaluateNextProduct(
-      const LeftMat &left_mat, const RightMat &right_mat,
+  [[nodiscard]] static constexpr auto SEvaluateCellValueFromRightMat(
+      const Inputs &...inputs) {
+    return RightMat::template SEvaluateCellValue<ProductIndex, ColIndex,
+                                                 InputIndex>(inputs...);
+  }
+
+  template <typename... Inputs>
+  [[nodiscard]] static constexpr auto SEvaluateCurrentProduct(
+      const Inputs &...inputs) {
+    return SEvaluateCellValueFromLeftMat(inputs...) *
+           SEvaluateCellValueFromRightMat(inputs...);
+  }
+
+  template <typename... Inputs>
+  [[nodiscard]] static constexpr auto SEvaluateNextProduct(
       const Inputs &...inputs) {
     return CellValueEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
-                              ProductIndex - 1>::Evaluate(left_mat, right_mat,
-                                                          inputs...);
+                              ProductIndex - 1>::SEvaluate(inputs...);
   }
-};
-
-template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
-          int ColIndex>
-class ExprCell {
-  static_assert(ColIndex >= 0);
-  static_assert(ColIndex < RightMat::kNumCols);
-
- public:
-  template <int InputIndex, typename... Inputs>
-  [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
-    return CellValueEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
-                              LeftMat::kNumCols - 1>::Evaluate(left_mat_,
-                                                               right_mat_,
-                                                               inputs...);
-  }
-
-  template <typename... Inputs>
-  [[nodiscard]] constexpr auto EvaluateValue(const Inputs &...inputs) const {
-    return EvaluateValue<sizeof...(inputs) - 1>(inputs...);
-  }
-
- private:
-  template <concepts::Mat, concepts::Mat, int>
-  friend class ExprRow;
-
-  constexpr explicit ExprCell(LeftMat left_mat, RightMat right_mat)
-      : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
-
-  LeftMat left_mat_{};
-  RightMat right_mat_{};
-};
-
-template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex>
-class ExprRow {
-  static_assert(RowIndex >= 0);
-  static_assert(RowIndex < LeftMat::kNumRows);
-
- public:
-  template <int ColIndex>
-  [[nodiscard]] constexpr auto GetCol() const {
-    return ExprCell<LeftMat, RightMat, RowIndex, ColIndex>{left_mat_,
-                                                           right_mat_};
-  }
-
- private:
-  template <concepts::Mat, concepts::Mat>
-  friend class ExprMat;
-
-  constexpr explicit ExprRow(LeftMat left_mat, RightMat right_mat)
-      : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
-
-  LeftMat left_mat_{};
-  RightMat right_mat_{};
 };
 
 template <concepts::Mat LeftMat, concepts::Mat RightMat>
@@ -209,20 +114,25 @@ class ExprMat {
   static constexpr int kNumCols = RightMat::kNumCols;
   static constexpr int kNumInputs = LeftMat::kNumInputs + RightMat::kNumInputs;
 
-  template <int RowIndex>
-  [[nodiscard]] constexpr auto GetRow() const {
-    return ExprRow<LeftMat, RightMat, RowIndex>{left_mat_, right_mat_};
+  template <int RowIndex, int ColIndex, int InputIndex, typename... Inputs>
+  [[nodiscard]] static constexpr auto SEvaluateCellValue(
+      const Inputs &...inputs) {
+    return CellValueEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
+                              LeftMat::kNumCols - 1>::SEvaluate(inputs...);
+  }
+
+  template <int RowIndex, int ColIndex, typename... Inputs>
+  [[nodiscard]] static constexpr auto SEvaluateCellValue(
+      const Inputs &...inputs) {
+    return SEvaluateCellValue<RowIndex, ColIndex, sizeof...(inputs) - 1>(
+        inputs...);
   }
 
  private:
   friend constexpr auto operator*(const concepts::Mat auto &,
                                   const concepts::Mat auto &);
 
-  constexpr explicit ExprMat(LeftMat left_mat, RightMat right_mat)
-      : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
-
-  LeftMat left_mat_{};
-  RightMat right_mat_{};
+  constexpr explicit ExprMat(LeftMat left_mat, RightMat right_mat) {}
 };
 
 [[nodiscard]] constexpr auto operator*(const concepts::Mat auto &left_mat,
@@ -230,72 +140,65 @@ class ExprMat {
   return ExprMat{left_mat, right_mat};
 }
 
-template <int RowIndex, int ColIndex, typename... Inputs>
-[[nodiscard]] constexpr auto EvaluateCell(const concepts::Mat auto &mat,
-                                          const Inputs &...inputs) {
-  return mat.template GetRow<RowIndex>()
-      .template GetCol<ColIndex>()
-      .template EvaluateValue(inputs...);
-}
+// template <typename ResultType, int RowIndex, int ColIndex>
+// struct MatrixEvaluator {
+//   template <typename... Inputs>
+//   constexpr explicit MatrixEvaluator(
+//       const concepts::Mat auto &mat,
+//       std::array<std::array<ResultType,
+//                             std::remove_reference_t<decltype(mat)>::kNumCols>,
+//                  std::remove_reference_t<decltype(mat)>::kNumRows> &result,
+//       const Inputs &...inputs) {
+//     result[RowIndex][ColIndex] =
+//         mat.EvaluateCellValue<RowIndex, ColIndex>(inputs...);
+//     MatrixEvaluator<ResultType, RowIndex, ColIndex - 1>{mat, result,
+//     inputs...};
+//   }
+// };
 
-template <typename ResultType, int RowIndex, int ColIndex>
-struct MatrixEvaluator {
-  template <typename... Inputs>
-  constexpr explicit MatrixEvaluator(
-      const concepts::Mat auto &mat,
-      std::array<std::array<ResultType,
-                            std::remove_reference_t<decltype(mat)>::kNumCols>,
-                 std::remove_reference_t<decltype(mat)>::kNumRows> &result,
-      const Inputs &...inputs) {
-    result[RowIndex][ColIndex] =
-        EvaluateCell<RowIndex, ColIndex>(mat, inputs...);
-    MatrixEvaluator<ResultType, RowIndex, ColIndex - 1>{mat, result, inputs...};
-  }
-};
+// template <typename ResultType, int RowIndex>
+// struct MatrixEvaluator<ResultType, RowIndex, 0> {
+//   template <typename... Inputs>
+//   constexpr explicit MatrixEvaluator(
+//       const concepts::Mat auto &mat,
+//       std::array<std::array<ResultType,
+//                             std::remove_reference_t<decltype(mat)>::kNumCols>,
+//                  std::remove_reference_t<decltype(mat)>::kNumRows> &result,
+//       const Inputs &...inputs) {
+//     result[RowIndex][0] = mat.EvaluateCellValue<RowIndex, 0>(inputs...);
+//     MatrixEvaluator<ResultType, RowIndex - 1,
+//                     std::remove_reference_t<decltype(mat)>::kNumCols - 1>{
+//         mat, result, inputs...};
+//   }
+// };
 
-template <typename ResultType, int RowIndex>
-struct MatrixEvaluator<ResultType, RowIndex, 0> {
-  template <typename... Inputs>
-  constexpr explicit MatrixEvaluator(
-      const concepts::Mat auto &mat,
-      std::array<std::array<ResultType,
-                            std::remove_reference_t<decltype(mat)>::kNumCols>,
-                 std::remove_reference_t<decltype(mat)>::kNumRows> &result,
-      const Inputs &...inputs) {
-    result[RowIndex][0] = EvaluateCell<RowIndex, 0>(mat, inputs...);
-    MatrixEvaluator<ResultType, RowIndex - 1,
-                    std::remove_reference_t<decltype(mat)>::kNumCols - 1>{
-        mat, result, inputs...};
-  }
-};
+// template <typename ResultType>
+// struct MatrixEvaluator<ResultType, 0, 0> {
+//   template <typename... Inputs>
+//   constexpr explicit MatrixEvaluator(
+//       const concepts::Mat auto &mat,
+//       std::array<std::array<ResultType,
+//                             std::remove_reference_t<decltype(mat)>::kNumCols>,
+//                  std::remove_reference_t<decltype(mat)>::kNumRows> &result,
+//       const Inputs &...inputs) {
+//     result[0][0] = mat.EvaluateCellValue<0, 0>(inputs...);
+//   }
+// };
 
-template <typename ResultType>
-struct MatrixEvaluator<ResultType, 0, 0> {
-  template <typename... Inputs>
-  constexpr explicit MatrixEvaluator(
-      const concepts::Mat auto &mat,
-      std::array<std::array<ResultType,
-                            std::remove_reference_t<decltype(mat)>::kNumCols>,
-                 std::remove_reference_t<decltype(mat)>::kNumRows> &result,
-      const Inputs &...inputs) {
-    result[0][0] = EvaluateCell<0, 0>(mat, inputs...);
-  }
-};
+// template <typename... Inputs>
+// [[nodiscard]] constexpr auto EvaluateMatrix(const concepts::Mat auto &mat,
+//                                             const Inputs &...inputs) {
+//   using MatType = std::remove_reference_t<decltype(mat)>;
+//   using ResultType = decltype(mat.EvaluateCellValue<0, 0>(inputs...));
 
-template <typename... Inputs>
-[[nodiscard]] constexpr auto EvaluateMatrix(const concepts::Mat auto &mat,
-                                            const Inputs &...inputs) {
-  using MatType = std::remove_reference_t<decltype(mat)>;
-  using ResultType = decltype(EvaluateCell<0, 0>(mat, inputs...));
+//   auto result = std::array<std::array<ResultType, MatType::kNumCols>,
+//                            MatType::kNumRows>{};
 
-  auto result = std::array<std::array<ResultType, MatType::kNumCols>,
-                           MatType::kNumRows>{};
+//   MatrixEvaluator<ResultType, MatType::kNumRows - 1, MatType::kNumCols - 1>{
+//       mat, result, inputs...};
 
-  MatrixEvaluator<ResultType, MatType::kNumRows - 1, MatType::kNumCols - 1>{
-      mat, result, inputs...};
-
-  return result;
-}
+//   return result;
+// }
 }  // namespace ctmm
 
 #endif  // CTMM_H_
