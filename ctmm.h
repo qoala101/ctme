@@ -9,31 +9,20 @@
 namespace ctmm {
 template <int Rows, int Cols, int RowIndex, int ColIndex>
 struct Col {
-  // constexpr explicit Col(const ClientMat& client_mat) :
-  // client_mat_{client_mat} {}
-
-  template<typename ClientMat>
+  template <typename ClientMat>
   constexpr auto GetVal(const ClientMat& t) const {
-    // std::cout << "GetClientVal " << RowIndex << " " << ColIndex << " = " << t[RowIndex][ColIndex] << "\n";
+    // std::cout << "GetClientVal " << RowIndex << " " << ColIndex << " = " <<
+    // t[RowIndex][ColIndex] << "\n";
     return t[RowIndex][ColIndex];
   }
-
-  // const ClientMat& client_mat_;
 };
 
 template <int Rows, int Cols, int RowIndex>
 struct Row {
-  // constexpr explicit Row(const ClientMat& client_mat) :
-  // client_mat_{client_mat} {}
-
   template <int ColIndex>
   constexpr auto GetCol() const {
-    return Col<Rows, Cols, RowIndex, ColIndex>{
-        // client_mat_
-    };
+    return Col<Rows, Cols, RowIndex, ColIndex>{};
   }
-
-  // const ClientMat& client_mat_;
 };
 
 template <int Rows, int Cols>
@@ -44,17 +33,10 @@ struct Mat {
   template <int RowIndex>
   using RowType = Row<Rows, Cols, RowIndex>;
 
-  // constexpr explicit Mat(const ClientMat& client_mat) :
-  // client_mat_{client_mat} {}
-
   template <int RowIndex>
   constexpr auto GetRow() const {
-    return Row<Rows, Cols, RowIndex>{
-        // client_mat_
-    };
+    return Row<Rows, Cols, RowIndex>{};
   }
-
-  // const ClientMat& client_mat_;
 };
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex,
@@ -117,7 +99,8 @@ struct ColExpression {
             left_mat_, right_mat_, t, args...}
             .sum_;
 
-    // std::cout << "} GetMatrixVal " << RowIndex << " " << ColIndex << " = " << sum << "\n";
+    // std::cout << "} GetMatrixVal " << RowIndex << " " << ColIndex << " = " <<
+    // sum << "\n";
 
     // std::cout << "SUM: " << sum << "\n";
 

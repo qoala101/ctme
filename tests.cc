@@ -15,13 +15,7 @@ void Test2Vectors() {
                                                       std::vector<int>{23, 24},
                                                       std::vector<int>{25, 26}};
 
-  constexpr auto a = Mat<2, 3>{
-      // a_values
-  };
-  constexpr auto b = Mat<3, 2>{
-      // b_values
-  };
-  constexpr auto expression = a * b;
+  constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
 
   std::cout << expression.GetRow<0>().GetCol<0>().GetVal(b_values, a_values)
             << "\n";
@@ -47,10 +41,7 @@ void Test3Vectors() {
   const auto c_values = std::vector<std::vector<int>>{
       std::vector<int>{31, 32, 33, 34}, std::vector<int>{35, 36, 37, 38}};
 
-  constexpr auto a = Mat<2, 3>{};
-  constexpr auto b = Mat<3, 2>{};
-  constexpr auto c = Mat<2, 4>{};
-  constexpr auto expression = a * b * c;
+  constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
 
   std::cout << expression.GetRow<0>().GetCol<0>().GetVal(c_values, b_values,
                                                          a_values)
@@ -102,13 +93,7 @@ void Test2Arrays() {
       std::array<int, 2>{21, 22}, std::array<int, 2>{23, 24},
       std::array<int, 2>{25, 26}};
 
-  constexpr auto a = Mat<2, 3>{
-      // a_values
-  };
-  constexpr auto b = Mat<3, 2>{
-      // b_values
-  };
-  constexpr auto expression = a * b;
+  constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
 
   std::cout << expression.GetRow<0>().GetCol<0>().GetVal(b_values, a_values)
             << "\n";
@@ -119,10 +104,14 @@ void Test2Arrays() {
   std::cout << expression.GetRow<1>().GetCol<1>().GetVal(b_values, a_values)
             << "\n";
 
-  static_assert(expression.GetRow<0>().GetCol<0>().GetVal(b_values, a_values) == 832);
-  static_assert(expression.GetRow<0>().GetCol<1>().GetVal(b_values, a_values) == 868);
-  static_assert(expression.GetRow<1>().GetCol<0>().GetVal(b_values, a_values) == 1039);
-  static_assert(expression.GetRow<1>().GetCol<1>().GetVal(b_values, a_values) == 1084);
+  static_assert(expression.GetRow<0>().GetCol<0>().GetVal(b_values, a_values) ==
+                832);
+  static_assert(expression.GetRow<0>().GetCol<1>().GetVal(b_values, a_values) ==
+                868);
+  static_assert(expression.GetRow<1>().GetCol<0>().GetVal(b_values, a_values) ==
+                1039);
+  static_assert(expression.GetRow<1>().GetCol<1>().GetVal(b_values, a_values) ==
+                1084);
 }
 
 void Test3Arrays() {
@@ -134,10 +123,7 @@ void Test3Arrays() {
   const auto c_values = std::array<std::array<int, 4>, 2>{
       std::array<int, 4>{31, 32, 33, 34}, std::array<int, 4>{35, 36, 37, 38}};
 
-  constexpr auto a = Mat<2, 3>{};
-  constexpr auto b = Mat<3, 2>{};
-  constexpr auto c = Mat<2, 4>{};
-  constexpr auto expression = a * b * c;
+  constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
 
   std::cout << expression.GetRow<0>().GetCol<0>().GetVal(c_values, b_values,
                                                          a_values)
