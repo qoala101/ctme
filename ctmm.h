@@ -2,6 +2,7 @@
 #define CTMM_H_
 
 #include <array>
+#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -15,9 +16,8 @@ struct Col {
   // constexpr explicit Col(const ClientMat& client_mat) :
   // client_mat_{client_mat} {}
 
-  constexpr auto GetVal(const ClientMat &t) const {
+  constexpr auto GetVal(const ClientMat& t) const {
     return t[RowIndex][ColIndex];
-    // return 0;
   }
 
   // const ClientMat& client_mat_;
@@ -59,19 +59,40 @@ struct Mat {
   // const ClientMat& client_mat_;
 };
 
-// template <typename T, int RowsLeft, int Common, int ColsRight, int RowIndex,
-//           int ColIndex>
-// struct ColExpression {
-//    auto operator()(const auto& left, const auto& right) const {
-//     auto sum = T{};
+template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex,
+          int Index>
+struct Iterator {
+  template <typename... Args>
+  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
+                              const ClientMat& t, const Args&... args)
+      : left_mat_{std::move(left_mat)},
+        right_mat_{std::move(right_mat)},
 
-//     for (auto i = 0; i < Common; ++i) {
-//       sum += left[RowIndex][i] * right[i][ColIndex];
-//     }
+        sum_{left_mat_.template GetRow<RowIndex>()
+                     .template GetCol<Index>()
+                     .GetVal(args...) *
+                 right_mat_.template GetRow<Index>()
+                     .template GetCol<ColIndex>()
+                     .GetVal(t) +
+             Iterator<LeftMat, RightMat, RowIndex, ColIndex, Index - 1>{
+                 left_mat_, right_mat_, t, args...}
+                 .sum_} {}
 
-//     return sum;
-//   }
-// };
+  LeftMat left_mat_{};
+  RightMat right_mat_{};
+
+  int sum_{};
+};
+
+template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
+struct Iterator<LeftMat, RightMat, RowIndex, ColIndex, -1> {
+  template <typename... Args>
+  constexpr explicit Iterator(LeftMat left_mat, RightMat right_mat,
+                              const ClientMat& t, const Args&... args)
+      : sum_{0} {}
+
+  int sum_{};
+};
 
 template <typename LeftMat, typename RightMat, int RowIndex, int ColIndex>
 struct ColExpression {
@@ -79,14 +100,13 @@ struct ColExpression {
       : left_mat_{std::move(left_mat)}, right_mat_{std::move(right_mat)} {}
 
   template <typename... Args>
-  constexpr auto GetVal(const ClientMat &t, const Args&... args) const {
+  constexpr auto GetVal(const ClientMat& t, const Args&... args) const {
     auto sum = 0;
 
-    for (auto i = 0; i < LeftMat::kCols; ++i) {
-      sum +=
-          left_mat_.template GetRow<RowIndex>().template GetCol<0>().GetVal(args...) *
-          right_mat_.template GetRow<0>().template GetCol<ColIndex>().GetVal(t);
-    }
+    sum =
+        Iterator<LeftMat, RightMat, RowIndex, ColIndex, LeftMat::kRows - 1>{
+            left_mat_, right_mat_, t, args...}
+            .sum_;
 
     return sum;
   }
