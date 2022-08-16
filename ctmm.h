@@ -24,14 +24,13 @@ class Mat {
   static constexpr int kNumCols = NumCols;
   static constexpr int kNumInputs = 1;
 
-  template <int RowIndex, int ColIndex, int InputIndex = 0, typename... Inputs>
+  template <int RowIndex, int ColIndex, int InputIndex = 0>
   [[nodiscard]] static constexpr auto Evaluate(
-      const Inputs &...inputs) {
+      const concepts::Input auto &...inputs) {
     return std::get<InputIndex>(std::tie(inputs...))[RowIndex][ColIndex];
   }
 
-  template <typename... Inputs>
-  [[nodiscard]] static constexpr auto Evaluate(const Inputs &...inputs) {
+  [[nodiscard]] static constexpr auto Evaluate(const concepts::Input auto &...inputs) {
     using ResultType = decltype(Evaluate<0, 0>(inputs...));
 
     auto result = std::array<std::array<ResultType, kNumCols>, kNumRows>{};
@@ -52,15 +51,12 @@ class ExprMat {
   static constexpr int kNumCols = RightMat::kNumCols;
   static constexpr int kNumInputs = LeftMat::kNumInputs + RightMat::kNumInputs;
 
-  template <int RowIndex, int ColIndex, typename... Inputs>
-  [[nodiscard]] static constexpr auto Evaluate(
-      const Inputs &...inputs) {
-    return Evaluate<RowIndex, ColIndex, sizeof...(inputs) - 1>(
-        inputs...);
+  template <int RowIndex, int ColIndex>
+  [[nodiscard]] static constexpr auto Evaluate(const concepts::Input auto &...inputs) {
+    return Evaluate<RowIndex, ColIndex, sizeof...(inputs) - 1>(inputs...);
   }
 
-  template <typename... Inputs>
-  [[nodiscard]] static constexpr auto Evaluate(const Inputs &...inputs) {
+  [[nodiscard]] static constexpr auto Evaluate(const concepts::Input auto &...inputs) {
     using ResultType = decltype(Evaluate<0, 0>(inputs...));
 
     auto result = std::array<std::array<ResultType, kNumCols>, kNumRows>{};
@@ -80,9 +76,8 @@ class ExprMat {
 
   constexpr explicit ExprMat() = default;
 
-  template <int RowIndex, int ColIndex, int InputIndex, typename... Inputs>
-  [[nodiscard]] static constexpr auto Evaluate(
-      const Inputs &...inputs) {
+  template <int RowIndex, int ColIndex, int InputIndex>
+  [[nodiscard]] static constexpr auto Evaluate(const concepts::Input auto &...inputs) {
     return CellEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
                          LeftMat::kNumCols - 1>::Evaluate(inputs...);
   }

@@ -7,8 +7,8 @@ namespace ctmm {
 template <concepts::Mat MatType, int RowIndex, int ColIndex>
 class MatrixEvaluator {
  public:
-  template <typename... Inputs>
-  static constexpr void Evaluate(auto &result, const Inputs &...inputs) {
+  static constexpr void Evaluate(auto &result,
+                                 const concepts::Input auto &...inputs) {
     result[RowIndex][ColIndex] =
         MatType::template Evaluate<RowIndex, ColIndex>(inputs...);
 

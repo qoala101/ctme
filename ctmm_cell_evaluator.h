@@ -8,8 +8,8 @@ template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
           int ColIndex, int InputIndex, int ProductIndex>
 class CellEvaluator {
  public:
-  template <typename... Inputs>
-  [[nodiscard]] static constexpr auto Evaluate(const Inputs &...inputs) {
+  [[nodiscard]] static constexpr auto Evaluate(
+      const concepts::Input auto &...inputs) {
     auto result = EvaluateCurrentProduct(inputs...);
 
     if constexpr (ProductIndex > 0) {
@@ -26,31 +26,27 @@ class CellEvaluator {
   template <concepts::Mat, concepts::Mat, int, int, int, int>
   friend class CellEvaluator;
 
-  template <typename... Inputs>
   [[nodiscard]] static constexpr auto EvaluateLeftMatCellValue(
-      const Inputs &...inputs) {
+      const concepts::Input auto &...inputs) {
     return LeftMat::template Evaluate<RowIndex, ProductIndex,
                                       InputIndex - RightMat::kNumInputs>(
         inputs...);
   }
 
-  template <typename... Inputs>
   [[nodiscard]] static constexpr auto EvaluateRightMatCellValue(
-      const Inputs &...inputs) {
+      const concepts::Input auto &...inputs) {
     return RightMat::template Evaluate<ProductIndex, ColIndex, InputIndex>(
         inputs...);
   }
 
-  template <typename... Inputs>
   [[nodiscard]] static constexpr auto EvaluateCurrentProduct(
-      const Inputs &...inputs) {
+      const concepts::Input auto &...inputs) {
     return EvaluateLeftMatCellValue(inputs...) *
            EvaluateRightMatCellValue(inputs...);
   }
 
-  template <typename... Inputs>
   [[nodiscard]] static constexpr auto EvaluateNextProduct(
-      const Inputs &...inputs) {
+      const concepts::Input auto &...inputs) {
     return CellEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
                          ProductIndex - 1>::Evaluate(inputs...);
   }
