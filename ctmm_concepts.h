@@ -1,30 +1,26 @@
 #ifndef CTMM_CONCEPTS_H_
 #define CTMM_CONCEPTS_H_
 
-#include <array>
-#include <exception>
-#include <iostream>
-#include <tuple>
-#include <type_traits>
 #include <utility>
-#include <vector>
 
-namespace ctmm::concepts {
+namespace ctmm {
+/**
+ * @brief Container of values accessible by [unsigned][unsigned] syntax.
+ */
 template <typename T>
-concept Input = requires(const T &t) {
-  t[0][0];
+concept Container2D = requires(const T &t, unsigned row, unsigned col) {
+  t[row][col];
 };
 
+/**
+ * @brief Object that behaves like a matrix.
+ */
 template <typename T>
-concept Mat = requires() {
-  true;
-  // { T::kNumRows } -> std::convertible_to<int>;
-  // { T::kNumCols } -> std::convertible_to<int>;
-  // { T::kNumInputs } -> std::convertible_to<int>;
-
-  // T::template Evaluate<0, 0>(std::vector<int>{}, std::vector<int>{});
-  // T::Evaluate(std::vector<int>{}, std::vector<int>{});
+concept MatExpression = requires() {
+  { T::kNumRows } -> std::convertible_to<const unsigned>;
+  { T::kNumCols } -> std::convertible_to<const unsigned>;
+  { T::kNumMats } -> std::convertible_to<const unsigned>;
 };
-}  // namespace ctmm::concepts
+}  // namespace ctmm
 
 #endif  // CTMM_CONCEPTS_H_

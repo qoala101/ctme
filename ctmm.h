@@ -1,22 +1,9 @@
 #ifndef CTMM_H_
 #define CTMM_H_
 
-#include <array>
-#include <exception>
-#include <iostream>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
-#include "ctmm_cell_evaluator.h"
-#include "ctmm_concepts.h"  // IWYU pragma: keep
 #include "ctmm_evaluate.h"
-#include "ctmm_mat_traits_evaluator.h"
-#include "ctmm_mat_traits_size.h"
-#include "ctmm_mat_types.h"
-#include "ctmm_matrix_evaluator.h"
-#include "ctmm_operations.h"
+#include "ctmm_mat.h"
+#include "ctmm_mat_product.h"
 
 /**
  * @brief
@@ -47,7 +34,7 @@
  *   values3);
  * @endcode
  *
- * 5. Inputs are anything which supports syntax [int][int] to get the cell
+ * 5. Inputs are anything which supports syntax [unsigned][unsigned] to get the cell
  * value. Values must support operator* for each other:
  * @code
  *   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<4, 2>{};

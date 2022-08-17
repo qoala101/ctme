@@ -17,17 +17,18 @@ void Test2VectorsInt() {
                                                       std::vector<int>{25, 26}};
 
   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{});
+  // using Expression = MatProduct<Mat<2, 3>, Mat<3, 2>>;
   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
 
   auto value = 0;
 
-  value = Evaluate<Expression, 0, 0>(a_values, b_values);
+  value = Expression::Evaluate<0, 0>(a_values, b_values);
   assert(value == 832);
   value = Evaluate<0, 1>(expression, a_values, b_values);
   assert(value == 868);
-  value = Evaluate<Expression, 1, 0>(a_values, b_values);
+  value = Expression::Evaluate<1, 0>(a_values, b_values);
   assert(value == 1039);
-  value = Evaluate<Expression, 1, 1>(a_values, b_values);
+  value = Expression::Evaluate<1, 1>(a_values, b_values);
   assert(value == 1084);
 }
 
@@ -186,10 +187,10 @@ void Test2ArraysInt() {
 
   using Expr = decltype(Mat<2, 3>{} * Mat<3, 2>{});
 
-  static_assert(Evaluate<Expr, 0, 0>(a_values, b_values) == 832);
-  static_assert(Evaluate<Expr, 0, 1>(a_values, b_values) == 868);
-  static_assert(Evaluate<Expr, 1, 0>(a_values, b_values) == 1039);
-  static_assert(Evaluate<Expr, 1, 1>(a_values, b_values) == 1084);
+  static_assert(Expr::Evaluate<0, 0>(a_values, b_values) == 832);
+  static_assert(Expr::Evaluate<0, 1>(a_values, b_values) == 868);
+  static_assert(Expr::Evaluate<1, 0>(a_values, b_values) == 1039);
+  static_assert(Expr::Evaluate<1, 1>(a_values, b_values) == 1084);
 }
 
 // void Test2ArraysFloat() {
@@ -368,28 +369,28 @@ void TestFacadeInt() {
       std::array<int, 4>{31, 32, 33, 34}, std::array<int, 4>{35, 36, 37, 38}};
 
   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{});
-  constexpr auto result1 = Evaluate<Expression>(a_values, b_values, c_values);
+  // constexpr auto result1 = Evaluate<Expression>(a_values, b_values, c_values);
 
-  static_assert(result1[0][0] == 56172);
-  static_assert(result1[0][1] == 57872);
-  static_assert(result1[0][2] == 59572);
-  static_assert(result1[0][3] == 61272);
-  static_assert(result1[1][0] == 70149);
-  static_assert(result1[1][1] == 72272);
-  static_assert(result1[1][2] == 74395);
-  static_assert(result1[1][3] == 76518);
+  // static_assert(result1[0][0] == 56172);
+  // static_assert(result1[0][1] == 57872);
+  // static_assert(result1[0][2] == 59572);
+  // static_assert(result1[0][3] == 61272);
+  // static_assert(result1[1][0] == 70149);
+  // static_assert(result1[1][1] == 72272);
+  // static_assert(result1[1][2] == 74395);
+  // static_assert(result1[1][3] == 76518);
 
-  constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
-  constexpr auto result2 = Evaluate(expression, a_values, b_values, c_values);
+  // constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
+  // constexpr auto result2 = Evaluate(expression, a_values, b_values, c_values);
 
-  static_assert(result2[0][0] == 56172);
-  static_assert(result2[0][1] == 57872);
-  static_assert(result2[0][2] == 59572);
-  static_assert(result2[0][3] == 61272);
-  static_assert(result2[1][0] == 70149);
-  static_assert(result2[1][1] == 72272);
-  static_assert(result2[1][2] == 74395);
-  static_assert(result2[1][3] == 76518);
+  // static_assert(result2[0][0] == 56172);
+  // static_assert(result2[0][1] == 57872);
+  // static_assert(result2[0][2] == 59572);
+  // static_assert(result2[0][3] == 61272);
+  // static_assert(result2[1][0] == 70149);
+  // static_assert(result2[1][1] == 72272);
+  // static_assert(result2[1][2] == 74395);
+  // static_assert(result2[1][3] == 76518);
 }
 
 // void TestFacadeIntFloatDouble() {
