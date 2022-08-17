@@ -13,6 +13,7 @@
 #include "ctmm_concepts.h"  // IWYU pragma: keep
 #include "ctmm_mat_product.h"
 #include "ctmm_matrix_evaluator.h"
+#include "ctmm_impl.h"
 
 /**
  * @brief
@@ -102,10 +103,6 @@ class Mat {
   static_assert(NumCols > 0);
 
  public:
-  static constexpr int kNumRows = NumRows;
-  static constexpr int kNumCols = NumCols;
-  static constexpr int kNumInputs = 1;
-
   template <int RowIndex, int ColIndex>
   [[nodiscard]] static constexpr auto Evaluate(
       const concepts::Input auto &...inputs) {
@@ -116,15 +113,17 @@ class Mat {
       const concepts::Input auto &...inputs) {
     using ResultType = decltype(Evaluate<0, 0>(inputs...));
 
-    auto result = std::array<std::array<ResultType, kNumCols>, kNumRows>{};
+    auto result = std::array<std::array<ResultType, Traits::kNumCols>, Traits::kNumRows>{};
 
-    MatrixEvaluator<Mat, kNumRows - 1, kNumCols - 1>::Evaluate(result,
+    MatrixEvaluator<Mat, Traits::kNumRows - 1, Traits::kNumCols - 1>::Evaluate(result,
                                                                inputs...);
 
     return result;
   }
 
  private:
+  using Traits = MatTrait<Mat<NumRows, NumCols>>;
+
   template <concepts::Mat, concepts::Mat, int, int, int, int>
   friend class CellEvaluator;
 

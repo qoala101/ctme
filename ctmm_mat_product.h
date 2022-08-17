@@ -14,13 +14,9 @@ namespace ctmm {
  */
 template <concepts::Mat LeftMat, concepts::Mat RightMat>
 class MatProduct {
-  static_assert(LeftMat::kNumCols == RightMat::kNumRows);
+  static_assert(MatTrait<LeftMat>::kNumCols == MatTrait<RightMat>::kNumRows);
 
  public:
-  static constexpr int kNumRows = LeftMat::kNumRows;
-  static constexpr int kNumCols = RightMat::kNumCols;
-  static constexpr int kNumInputs = LeftMat::kNumInputs + RightMat::kNumInputs;
-
   template <int RowIndex, int ColIndex>
   [[nodiscard]] static constexpr auto Evaluate(
       const concepts::Input auto &...inputs) {
@@ -31,15 +27,17 @@ class MatProduct {
       const concepts::Input auto &...inputs) {
     using ResultType = decltype(Evaluate<0, 0>(inputs...));
 
-    auto result = std::array<std::array<ResultType, kNumCols>, kNumRows>{};
+    auto result = std::array<std::array<ResultType, Traits::kNumCols>, Traits::kNumRows>{};
 
-    MatrixEvaluator<MatProduct<LeftMat, RightMat>, kNumRows - 1,
-                    kNumCols - 1>::Evaluate(result, inputs...);
+    MatrixEvaluator<MatProduct<LeftMat, RightMat>, Traits::kNumRows - 1,
+                    Traits::kNumCols - 1>::Evaluate(result, inputs...);
 
     return result;
   }
 
  private:
+  using Traits = MatTrait<MatProduct<LeftMat, RightMat>>;
+
   template <concepts::Mat, concepts::Mat, int, int, int, int>
   friend class CellEvaluator;
 
@@ -53,7 +51,7 @@ class MatProduct {
   [[nodiscard]] static constexpr auto Evaluate(
       const concepts::Input auto &...inputs) {
     return CellEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
-                         LeftMat::kNumCols - 1>::Evaluate(inputs...);
+                         MatTrait<LeftMat>::kNumCols - 1>::Evaluate(inputs...);
   }
 };
 }

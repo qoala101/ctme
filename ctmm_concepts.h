@@ -17,9 +17,10 @@ concept Input = requires(const T &t) {
 
 template <typename T>
 concept Mat = requires() {
-  { T::kNumRows } -> std::convertible_to<int>;
-  { T::kNumCols } -> std::convertible_to<int>;
-  { T::kNumInputs } -> std::convertible_to<int>;
+  true;
+  // { T::kNumRows } -> std::convertible_to<int>;
+  // { T::kNumCols } -> std::convertible_to<int>;
+  // { T::kNumInputs } -> std::convertible_to<int>;
 
   // T::template Evaluate<0, 0>(std::vector<int>{}, std::vector<int>{});
   // T::Evaluate(std::vector<int>{}, std::vector<int>{});
