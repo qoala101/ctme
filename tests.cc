@@ -18,9 +18,6 @@ void Test2VectorsInt() {
 
   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{});
 
-  // using Expression = Mat<2, 3, MultiplyByMat<3, 2, MultiplyByMat<2, 4>>>;
-  // using Expression = Mat<2, 3, Mult<Mat<3, 2, Mult<Mat<2, 4>>>>>;
-
   auto value = 0;
 
   value = Expression::Evaluate<0, 0>(a_values, b_values);

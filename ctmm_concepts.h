@@ -11,15 +11,18 @@
 
 namespace ctmm::concepts {
 template <typename T>
+concept Input = requires(const T &t) {
+  t[0][0];
+};
+
+template <typename T>
 concept Mat = requires() {
   { T::kNumRows } -> std::convertible_to<int>;
   { T::kNumCols } -> std::convertible_to<int>;
   { T::kNumInputs } -> std::convertible_to<int>;
-};
 
-template <typename T>
-concept Input = requires(const T &t) {
-  t[0][0];
+  // T::template Evaluate<0, 0>(std::vector<int>{}, std::vector<int>{});
+  // T::Evaluate(std::vector<int>{}, std::vector<int>{});
 };
 }  // namespace ctmm::concepts
 
