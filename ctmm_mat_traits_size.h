@@ -1,5 +1,5 @@
-#ifndef STONKS_CTMM_IMPL_H_
-#define STONKS_CTMM_IMPL_H_
+#ifndef CTMM_IMPL_H_
+#define CTMM_IMPL_H_
 
 #include "ctmm_concepts.h"
 
@@ -10,11 +10,12 @@ class Mat;
 template <concepts::Mat, concepts::Mat>
 class MatProduct;
 
+namespace mat_traits {
 template <concepts::Mat T>
-class MatTrait;
+class Size;
 
 template <int NumRows, int NumCols>
-class MatTrait<Mat<NumRows, NumCols>> {
+class Size<Mat<NumRows, NumCols>> {
  public:
   static constexpr int kNumRows = NumRows;
   static constexpr int kNumCols = NumCols;
@@ -22,12 +23,14 @@ class MatTrait<Mat<NumRows, NumCols>> {
 };
 
 template <concepts::Mat LeftMat, concepts::Mat RightMat>
-class MatTrait<MatProduct<LeftMat, RightMat>> {
+class Size<MatProduct<LeftMat, RightMat>> {
  public:
-  static constexpr int kNumRows = MatTrait<LeftMat>::kNumRows;
-  static constexpr int kNumCols = MatTrait<RightMat>::kNumCols;
-  static constexpr int kNumInputs = MatTrait<LeftMat>::kNumInputs + MatTrait<RightMat>::kNumInputs;
+  static constexpr int kNumRows = Size<LeftMat>::kNumRows;
+  static constexpr int kNumCols = Size<RightMat>::kNumCols;
+  static constexpr int kNumInputs =
+      Size<LeftMat>::kNumInputs + Size<RightMat>::kNumInputs;
 };
+}  // namespace mat_traits
 }  // namespace ctmm
 
-#endif  // STONKS_CTMM_IMPL_H_
+#endif  // CTMM_IMPL_H_

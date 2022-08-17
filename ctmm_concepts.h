@@ -1,5 +1,5 @@
-#ifndef STONKS_CTMM_CONCEPTS_H_
-#define STONKS_CTMM_CONCEPTS_H_
+#ifndef CTMM_CONCEPTS_H_
+#define CTMM_CONCEPTS_H_
 
 #include <array>
 #include <exception>
@@ -27,4 +27,4 @@ concept Mat = requires() {
 };
 }  // namespace ctmm::concepts
 
-#endif  // STONKS_CTMM_CONCEPTS_H_
+#endif  // CTMM_CONCEPTS_H_

@@ -1,13 +1,18 @@
-#ifndef STONKS_CTMM_CELL_EVALUATOR_H_
-#define STONKS_CTMM_CELL_EVALUATOR_H_
+#ifndef CTMM_CELL_EVALUATOR_H_
+#define CTMM_CELL_EVALUATOR_H_
 
 #include "ctmm_concepts.h"  // IWYU pragma: keep
-#include "ctmm_impl.h"
+#include "ctmm_mat_traits_size.h"
 
 namespace ctmm {
+namespace mat_traits {
+template <concepts::Mat T>
+class Evaluator;
+} // namespace mat_traits
+
 template <concepts::Mat LeftMat, concepts::Mat RightMat, int RowIndex,
           int ColIndex, int InputIndex, int ProductIndex>
-class CellEvaluator {
+class SCellEvaluator {
  public:
   [[nodiscard]] static constexpr auto Evaluate(
       const concepts::Input auto &...inputs) {
@@ -29,15 +34,15 @@ class CellEvaluator {
 
   [[nodiscard]] static constexpr auto EvaluateLeftMatCellValue(
       const concepts::Input auto &...inputs) {
-    return LeftMat::template Evaluate<RowIndex, ProductIndex,
-                                      InputIndex - MatTrait<RightMat>::kNumInputs>(
-        inputs...);
+    return mat_traits::Evaluator<LeftMat>::template Evaluate<
+        RowIndex, ProductIndex,
+        InputIndex - mat_traits::Size<RightMat>::kNumInputs>(inputs...);
   }
 
   [[nodiscard]] static constexpr auto EvaluateRightMatCellValue(
       const concepts::Input auto &...inputs) {
-    return RightMat::template Evaluate<ProductIndex, ColIndex, InputIndex>(
-        inputs...);
+    return mat_traits::Evaluator<RightMat>::template Evaluate<
+        ProductIndex, ColIndex, InputIndex>(inputs...);
   }
 
   [[nodiscard]] static constexpr auto EvaluateCurrentProduct(
@@ -48,11 +53,10 @@ class CellEvaluator {
 
   [[nodiscard]] static constexpr auto EvaluateNextProduct(
       const concepts::Input auto &...inputs) {
-    return CellEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
-                         ProductIndex - 1>::Evaluate(inputs...);
+    return SCellEvaluator<LeftMat, RightMat, RowIndex, ColIndex, InputIndex,
+                          ProductIndex - 1>::Evaluate(inputs...);
   }
 };
-
 }  // namespace ctmm
 
-#endif  // STONKS_CTMM_CELL_EVALUATOR_H_
+#endif  // CTMM_CELL_EVALUATOR_H_
