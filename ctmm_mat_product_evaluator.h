@@ -22,7 +22,7 @@ class MatProductEvaluator {
   /**
    * @brief Recursively evaluates the value of the single cell.
    */
-  [[nodiscard]] static constexpr auto Evaluate(
+  [[nodiscard]] static constexpr auto EvaluateCell(
       const MatValues auto &...input_values) {
     auto result = EvaluateCurrentProduct(input_values...);
 
@@ -36,14 +36,14 @@ class MatProductEvaluator {
  private:
   [[nodiscard]] static constexpr auto EvaluateLeftMatCellValue(
       const MatValues auto &...input_values) {
-    return LeftMat::template Evaluate<RowIndex, ProductIndex,
+    return LeftMat::template EvaluateCell<RowIndex, ProductIndex,
                                       ValuesIndex - RightMat::kNumMats>(
         input_values...);
   }
 
   [[nodiscard]] static constexpr auto EvaluateRightMatCellValue(
       const MatValues auto &...input_values) {
-    return RightMat::template Evaluate<ProductIndex, ColIndex, ValuesIndex>(
+    return RightMat::template EvaluateCell<ProductIndex, ColIndex, ValuesIndex>(
         input_values...);
   }
 
@@ -57,7 +57,7 @@ class MatProductEvaluator {
       const MatValues auto &...input_values) {
     return MatProductEvaluator<LeftMat, RightMat, RowIndex, ColIndex,
                                ValuesIndex,
-                               ProductIndex - 1>::Evaluate(input_values...);
+                               ProductIndex - 1>::EvaluateCell(input_values...);
   }
 };
 }  // namespace ctmm

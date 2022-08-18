@@ -1,5 +1,5 @@
-#ifndef CTMM_MAT_H_
-#define CTMM_MAT_H_
+#ifndef STONKS_CTMM_MAT_H_
+#define STONKS_CTMM_MAT_H_
 
 #include <tuple>
 
@@ -20,7 +20,7 @@ class Mat {
   static constexpr unsigned kNumMats = 1;
 
   template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
-  [[nodiscard]] static constexpr auto Evaluate(
+  [[nodiscard]] static constexpr auto EvaluateCell(
       const MatValues auto &...input_values) {
     return std::get<ValuesIndex>(std::tie(input_values...))[RowIndex][ColIndex];
   }
@@ -29,4 +29,4 @@ class Mat {
 };
 }  // namespace ctmm
 
-#endif  // CTMM_MAT_H_
+#endif  // STONKS_CTMM_MAT_H_

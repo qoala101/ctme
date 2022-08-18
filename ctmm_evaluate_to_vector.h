@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "ctmm_concepts.h"  // IWYU pragma: keep
-#include "ctmm_evaluate.h"
+#include "ctmm_evaluate_to_container.h"
 #include "ctmm_result_traits.h"
 
 namespace ctmm {
@@ -20,7 +20,7 @@ namespace ctmm {
  * @return Vector of vectors. Value type is defined by the input values.
  */
 template <MatExpression Expression>
-[[nodiscard]] constexpr auto EvaluateToVectors(
+[[nodiscard]] constexpr auto EvaluateToVector(
     const MatValues auto &...input_values) {
   using ResultTraits = decltype(GetResultTraits<Expression>(input_values...));
 
@@ -32,18 +32,18 @@ template <MatExpression Expression>
     row.resize(ResultTraits::kNumCols);
   }
 
-  Evaluate<Expression>(result_values, input_values...);
+  EvaluateTo<Expression>(result_values, input_values...);
   return result_values;
 }
 
 /**
- * @copydoc EvaluateToVectors<Expression>
+ * @copydoc EvaluateToVector<Expression>
  * @param expression Defines the type of the evaluated expression.
  */
-[[nodiscard]] constexpr auto EvaluateToVectors(
+[[nodiscard]] constexpr auto EvaluateToVector(
     const MatExpression auto &expression,
     const MatValues auto &...input_values) {
-  return EvaluateToVectors<std::decay_t<decltype(expression)>>(input_values...);
+  return EvaluateToVector<std::decay_t<decltype(expression)>>(input_values...);
 }
 }  // namespace ctmm
 

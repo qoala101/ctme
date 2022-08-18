@@ -18,11 +18,11 @@ class MatProduct {
   static constexpr unsigned kNumMats = LeftMat::kNumMats + RightMat::kNumMats;
 
   template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
-  [[nodiscard]] static constexpr auto Evaluate(
+  [[nodiscard]] static constexpr auto EvaluateCell(
       const MatValues auto &...input_values) {
     return MatProductEvaluator<
         LeftMat, RightMat, RowIndex, ColIndex, ValuesIndex,
-        LeftMat::kNumCols - 1>::Evaluate(input_values...);
+        LeftMat::kNumCols - 1>::EvaluateCell(input_values...);
   }
 
   static_assert(MatExpression<MatProduct>);

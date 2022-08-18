@@ -26,11 +26,11 @@
  *   constexpr auto expression4 = expression1 * Mat<4, 1>{};  // Error
  * @endcode
  *
- * 4. In order to evaluate an expression, you must provide the inputs for each
+ * 4. In order to evaluate an expression, you must provide the values for each
  * matrix:
  * @code
  *   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<4, 2>{};
- *   constexpr auto result = decltype(expression)::Evaluate(values1, values2,
+ *   constexpr auto result = decltype(expression)::EvaluateCell(values1, values2,
  *   values3);
  * @endcode
  *
@@ -42,32 +42,32 @@
  *   const auto values2 = std::vector<std::vector<float>>({1, 2}, {3, 4}, {5,
  *   6});
  *   constexpr auto values3 = double[4][2];
- *   const auto result = decltype(expression)::Evaluate(values1, values2,
+ *   const auto result = decltype(expression)::EvaluateCell(values1, values2,
  *   values3);
  * @endcode
  *
- * 6. Providing wrong amount of inputs produces compile-time error:
+ * 6. Providing wrong amount of values produces compile-time error:
  * @code
  *   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
- *   const auto result1 = decltype(expression)::Evaluate(values1, values2);  //
+ *   const auto result1 = decltype(expression)::EvaluateCell(values1, values2);  //
  *   OK
- *   const auto result2 = decltype(expression)::Evaluate(values1, values2,
+ *   const auto result2 = decltype(expression)::EvaluateCell(values1, values2,
  *   values3);  // Error
- *   const auto result3 = decltype(expression)::Evaluate(values1);  // Error
+ *   const auto result3 = decltype(expression)::EvaluateCell(values1);  // Error
  * @endcode
  *
- * 7. If all inputs are constexpr, evaluation result is also constexpr:
+ * 7. If all values are constexpr, evaluation result is also constexpr:
  * @code
  *   const auto values = std::vector<std::vector<int>>{};
- *   const auto result = decltype(expression)::Evaluate(vectors1, vectors1);
- *   constexpr auto result = decltype(expression)::Evaluate(arrays1, arrays1);
+ *   const auto result = decltype(expression)::EvaluateCell(vectors1, vectors1);
+ *   constexpr auto result = decltype(expression)::EvaluateCell(arrays1, arrays1);
  * @endcode
  *
  * 8. Cells can be evaluated one by one:
  * @code
- *   constexpr auto cell_0_0 = decltype(expression)::Evaluate<0, 0>(values1,
+ *   constexpr auto cell_0_0 = decltype(expression)::EvaluateCell<0, 0>(values1,
  *   values2);
- *   constexpr auto cell_0_1 = decltype(expression)::Evaluate<0, 1>(values1,
+ *   constexpr auto cell_0_1 = decltype(expression)::EvaluateCell<0, 1>(values1,
  *   values2);
  * @endcode
  *
@@ -75,8 +75,8 @@
  * operate them without creating values:
  * @code
  *   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{} * Mat<4, 2>{});
- *   constexpr auto result = Evaluate<Expression>(values1, values2, values3);
- *   constexpr auto cell_0_0 = Evaluate<Expression, 0, 0>(values1, values2,
+ *   constexpr auto result = EvaluateCell<Expression>(values1, values2, values3);
+ *   constexpr auto cell_0_0 = EvaluateCell<Expression, 0, 0>(values1, values2,
  *   values3);
  * @endcode
  */

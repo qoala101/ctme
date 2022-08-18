@@ -23,7 +23,7 @@ concept MatValues = requires(const T &t, unsigned row) {
  * list, which tells which inputs should be used to take values from.
  * @code
  *   template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
- *   static constexpr auto Evaluate(const MatValues auto &...input_values);
+ *   static constexpr auto EvaluateCell(const MatValues auto &...input_values);
  * @endcode
  */
 template <typename T>

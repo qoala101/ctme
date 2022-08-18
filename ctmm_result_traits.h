@@ -29,7 +29,7 @@ template <MatExpression Expression>
 [[nodiscard]] constexpr auto GetResultTraits(
     const MatValues auto &...input_values) {
   using ResultType =
-      decltype(Expression::template Evaluate<0, 0, sizeof...(input_values) - 1>(
+      decltype(Expression::template EvaluateCell<0, 0, sizeof...(input_values) - 1>(
           input_values...));
   return ResultTraits<Expression::kNumRows, Expression::kNumCols, ResultType>{};
 }
