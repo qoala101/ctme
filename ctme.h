@@ -1,8 +1,13 @@
 #ifndef CTME_H_
 #define CTME_H_
 
+#include "ctme_evaluate_cell.h"
+#include "ctme_evaluate_to_array.h"
+#include "ctme_evaluate_to_container.h"
+#include "ctme_evaluate_to_vector.h"
 #include "ctme_mat.h"
 #include "ctme_mat_product.h"
+#include "ctme_result_traits.h"
 
 /**
  * @brief
