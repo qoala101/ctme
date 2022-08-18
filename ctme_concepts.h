@@ -9,9 +9,8 @@ namespace ctme {
  * @brief Container of values accessible by [unsigned][unsigned] syntax.
  */
 template <typename T>
-concept MatValues = requires(const T &t, unsigned row) {
-  requires std::ranges::random_access_range<T>;
-  requires std::ranges::random_access_range<decltype(t[row])>;
+concept MatValues = requires(const T &t, unsigned index) {
+  t[index][index];
 };
 
 /**

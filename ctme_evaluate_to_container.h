@@ -30,8 +30,8 @@ namespace ctme {
  * used to define the expression.
  */
 template <MatExpression Expression>
-void EvaluateTo(MatValues auto &result_values,
-                const MatValues auto &...input_values) {
+constexpr void EvaluateTo(MatValues auto &result_values,
+                          const MatValues auto &...input_values) {
   return details::ContainerEvaluator<Expression, Expression::kNumRows - 1,
                                      Expression::kNumCols -
                                          1>::EvaluateTo(result_values,
@@ -42,9 +42,9 @@ void EvaluateTo(MatValues auto &result_values,
  * @copydoc EvaluateTo<Expression>
  * @param expression Defines the type of the evaluated expression.
  */
-void EvaluateTo(const MatExpression auto &expression,
-                MatValues auto &result_values,
-                const MatValues auto &...input_values) {
+constexpr void EvaluateTo(const MatExpression auto &expression,
+                          MatValues auto &result_values,
+                          const MatValues auto &...input_values) {
   return EvaluateTo<std::decay_t<decltype(expression)>>(result_values,
                                                         input_values...);
 }
