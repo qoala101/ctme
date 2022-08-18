@@ -7,7 +7,7 @@ if(CTMM_TESTS)
 endif()
 
 project(
-  "ctmm"
+  "ctme"
   VERSION 0.0.1
   LANGUAGES CXX
 )
@@ -24,8 +24,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-add_library(ctmm INTERFACE)
-target_include_directories(ctmm INTERFACE .)
+add_library(ctme INTERFACE)
+target_include_directories(ctme INTERFACE .)
 
 if(CTMM_TESTS)
   add_subdirectory(test)

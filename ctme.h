@@ -1,8 +1,8 @@
 #ifndef CTMM_H_
 #define CTMM_H_
 
-#include "ctmm_mat.h"
-#include "ctmm_mat_product.h"
+#include "ctme_mat.h"
+#include "ctme_mat_product.h"
 
 /**
  * @brief

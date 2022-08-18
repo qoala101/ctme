@@ -4,7 +4,7 @@
 #include <concepts>
 #include <iterator>
 
-namespace ctmm {
+namespace ctme {
 /**
  * @brief Container of values accessible by [unsigned][unsigned] syntax.
  */
@@ -32,6 +32,6 @@ concept MatExpression = requires() {
   { T::kNumCols } -> std::convertible_to<const unsigned>;
   { T::kNumMats } -> std::convertible_to<const unsigned>;
 };
-}  // namespace ctmm
+}  // namespace ctme
 
 #endif  // CTMM_CONCEPTS_H_

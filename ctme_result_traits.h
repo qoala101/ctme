@@ -1,9 +1,9 @@
 #ifndef CTMM_RESULT_TRAITS_H_
 #define CTMM_RESULT_TRAITS_H_
 
-#include "ctmm_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"  // IWYU pragma: keep
 
-namespace ctmm {
+namespace ctme {
 /**
  * @brief Result matrix size and value type.
  */
@@ -43,6 +43,6 @@ template <MatExpression Expression>
     const MatValues auto &...input_values) {
   return GetResultTraits<std::decay_t<decltype(expression)>>(input_values...);
 }
-}  // namespace ctmm
+}  // namespace ctme
 
 #endif  // CTMM_RESULT_TRAITS_H_

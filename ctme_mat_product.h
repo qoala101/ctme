@@ -1,10 +1,10 @@
 #ifndef CTMM_MAT_PRODUCT_H_
 #define CTMM_MAT_PRODUCT_H_
 
-#include "ctmm_concepts.h"  // IWYU pragma: keep
-#include "ctmm_mat_product_evaluator.h"
+#include "ctme_concepts.h"  // IWYU pragma: keep
+#include "ctme_mat_product_evaluator.h"
 
-namespace ctmm {
+namespace ctme {
 /**
  * @brief Multiplication product of two matrices.
  */
@@ -37,6 +37,6 @@ class MatProduct {
   return MatProduct<std::decay_t<decltype(left_mat)>,
                     std::decay_t<decltype(right_mat)>>{};
 }
-}  // namespace ctmm
+}  // namespace ctme
 
 #endif  // CTMM_MAT_PRODUCT_H_

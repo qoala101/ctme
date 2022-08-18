@@ -1,9 +1,9 @@
 #ifndef CTMM_EVALUATE_CELL_H_
 #define CTMM_EVALUATE_CELL_H_
 
-#include "ctmm_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"  // IWYU pragma: keep
 
-namespace ctmm {
+namespace ctme {
 /**
  * @brief Evaluates a single cell of the matrix expression.
  *
@@ -33,6 +33,6 @@ template <unsigned RowIndex, unsigned CellIndex>
   return EvaluateCell<std::decay_t<decltype(expression)>, RowIndex, CellIndex>(
       input_values...);
 }
-}  // namespace ctmm
+}  // namespace ctme
 
 #endif  // CTMM_EVALUATE_CELL_H_

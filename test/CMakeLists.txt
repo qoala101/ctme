@@ -8,7 +8,7 @@ enable_testing()
 
 add_executable(tests run_time_tests.cc)
 
-target_link_libraries(tests PRIVATE ctmm)
+target_link_libraries(tests PRIVATE ctme)
 target_link_libraries(tests PRIVATE GTest::gtest GTest::gtest_main)
 # target_link_libraries(tests PRIVATE benchmark::benchmark)
 

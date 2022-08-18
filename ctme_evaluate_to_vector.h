@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include "ctmm_concepts.h"  // IWYU pragma: keep
-#include "ctmm_evaluate_to_container.h"
-#include "ctmm_result_traits.h"
+#include "ctme_concepts.h"  // IWYU pragma: keep
+#include "ctme_evaluate_to_container.h"
+#include "ctme_result_traits.h"
 
-namespace ctmm {
+namespace ctme {
 /**
  * @brief Evaluates the matrix expression to vector of vectors.
  *
@@ -43,6 +43,6 @@ template <MatExpression Expression>
     const MatValues auto &...input_values) {
   return EvaluateToVector<std::decay_t<decltype(expression)>>(input_values...);
 }
-}  // namespace ctmm
+}  // namespace ctme
 
 #endif  // CTMM_EVALUATE_AS_VECTOR_H_

@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "compile_time_tests.h"
-#include "ctmm_evaluate_cell.h"
-#include "ctmm_evaluate_to_container.h"
-#include "ctmm_mat.h"
-#include "ctmm_mat_product.h"
-#include "ctmm_result_traits.h"
+#include "ctme_evaluate_cell.h"
+#include "ctme_evaluate_to_container.h"
+#include "ctme_mat.h"
+#include "ctme_mat_product.h"
+#include "ctme_result_traits.h"
 
-using namespace ctmm;
+using namespace ctme;
 
 namespace {
 TEST(Mat, MatIsExpression) {
@@ -47,10 +47,10 @@ TEST(Foo, Sum)
 //       {31.1, 32.1, 33.1, 34.1}, {35.1, 36.1, 37.1, 38.1}};
 
 //   constexpr auto expression =
-//       ctmm::Mat<2, 3>{} * ctmm::Mat<3, 2>{} * ctmm::Mat<2, 4>{};
+//       ctme::Mat<2, 3>{} * ctme::Mat<3, 2>{} * ctme::Mat<2, 4>{};
 
 //   EXPECT_TRUE(true);
-//   auto a = ctmm::EvaluateCell<0, 0>(expression, a_values, b_values,
+//   auto a = ctme::EvaluateCell<0, 0>(expression, a_values, b_values,
 //   c_values); EXPECT_NEAR(a, 56580, 1);
 
 //   assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(a_values, b_values,
@@ -582,19 +582,19 @@ TEST(Foo, Sum)
 
 // auto main() -> int {
 //   std::cout << "TEST START\n";
-//   // ctmm::tests::Test2VectorsInt();
-//   // ctmm::tests::Test2VectorsFloat();
-//   // ctmm::tests::Test3VectorsInt();
-//   // ctmm::tests::Test3VectorsIntFloatDouble();
-//   ctmm::tests::Test2ArraysInt();
-//   // ctmm::tests::Test2ArraysFloat();
-//   // ctmm::tests::Test3ArraysInt();
-//   // ctmm::tests::Test3ArraysIntFloatDouble();
-//   // ctmm::tests::Test1Vector1Array();
-//   // ctmm::tests::Test1Mat1Expression();
-//   // ctmm::tests::Test2Expressions();
-//   ctmm::tests::TestFacadeInt();
-//   // ctmm::tests::TestFacadeIntFloatDouble();
+//   // ctme::tests::Test2VectorsInt();
+//   // ctme::tests::Test2VectorsFloat();
+//   // ctme::tests::Test3VectorsInt();
+//   // ctme::tests::Test3VectorsIntFloatDouble();
+//   ctme::tests::Test2ArraysInt();
+//   // ctme::tests::Test2ArraysFloat();
+//   // ctme::tests::Test3ArraysInt();
+//   // ctme::tests::Test3ArraysIntFloatDouble();
+//   // ctme::tests::Test1Vector1Array();
+//   // ctme::tests::Test1Mat1Expression();
+//   // ctme::tests::Test2Expressions();
+//   ctme::tests::TestFacadeInt();
+//   // ctme::tests::TestFacadeIntFloatDouble();
 //   std::cout << "TEST END\n";
 //   return 0;
 // }

@@ -3,9 +3,9 @@
 
 #include <tuple>
 
-#include "ctmm_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"  // IWYU pragma: keep
 
-namespace ctmm {
+namespace ctme {
 /**
  * @brief Plain matrix.
  */
@@ -27,6 +27,6 @@ class Mat {
 
   static_assert(MatExpression<Mat>);
 };
-}  // namespace ctmm
+}  // namespace ctme
 
 #endif  // CTMM_MAT_H_

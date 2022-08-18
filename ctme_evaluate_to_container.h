@@ -1,10 +1,10 @@
 #ifndef CTMM_EVALUATE_TO_2D_CONTAINER_H_
 #define CTMM_EVALUATE_TO_2D_CONTAINER_H_
 
-#include "ctmm_concepts.h"  // IWYU pragma: keep
-#include "ctmm_container_evaluator.h"
+#include "ctme_concepts.h"  // IWYU pragma: keep
+#include "ctme_container_evaluator.h"
 
-namespace ctmm {
+namespace ctme {
 /**
  * @brief Evaluates the matrix expression and writes results
  * to the provided 2D container. Can be used to fill containers in runtime.
@@ -48,6 +48,6 @@ void EvaluateTo(const MatExpression auto &expression,
   return EvaluateTo<std::decay_t<decltype(expression)>>(result_values,
                                                         input_values...);
 }
-}  // namespace ctmm
+}  // namespace ctme
 
 #endif  // STONKS_CTMM_EVALUATE_TO_2D_CONTAINER_H_

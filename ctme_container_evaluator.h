@@ -1,9 +1,9 @@
 #ifndef CTMM_CONTAINER_EVALUATOR_H_
 #define CTMM_CONTAINER_EVALUATOR_H_
 
-#include "ctmm_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"  // IWYU pragma: keep
 
-namespace ctmm::details {
+namespace ctme::details {
 /**
  * @brief Recursively evaluates the value for each expression result cell
  * and writes it to result container.
@@ -57,6 +57,6 @@ class ContainerEvaluator {
                                                              input_values...);
   }
 };
-}  // namespace ctmm::details
+}  // namespace ctme::details
 
 #endif  // CTMM_CONTAINER_EVALUATOR_H_
