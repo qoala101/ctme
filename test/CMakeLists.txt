@@ -12,6 +12,7 @@ add_executable(tests
   evaluate_to_container.cc
   evaluate_to_vector.cc
   mat_product.cc
+  mat_sum.cc
   mat.cc
   result_traits.cc)
 

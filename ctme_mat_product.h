@@ -32,8 +32,7 @@ class MatProduct {
  * @brief Produces an object of matrix product type.
  */
 [[nodiscard]] constexpr auto operator*(const MatExpression auto &left_mat,
-                                       const MatExpression auto &right_mat)
-    -> MatExpression auto{
+                                       const MatExpression auto &right_mat) {
   return MatProduct<std::decay_t<decltype(left_mat)>,
                     std::decay_t<decltype(right_mat)>>{};
 }
