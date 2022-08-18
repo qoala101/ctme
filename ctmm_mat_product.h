@@ -20,7 +20,7 @@ class MatProduct {
   template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
   [[nodiscard]] static constexpr auto EvaluateCell(
       const MatValues auto &...input_values) {
-    return MatProductEvaluator<
+    return details::MatProductEvaluator<
         LeftMat, RightMat, RowIndex, ColIndex, ValuesIndex,
         LeftMat::kNumCols - 1>::EvaluateCell(input_values...);
   }

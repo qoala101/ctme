@@ -3,7 +3,7 @@
 
 #include "ctmm_concepts.h"  // IWYU pragma: keep
 
-namespace ctmm {
+namespace ctmm::details {
 /**
  * @brief Recursively evaluates the value of the single cell in the product
  * of two matrices.
@@ -61,6 +61,6 @@ class MatProductEvaluator {
                                ProductIndex - 1>::EvaluateCell(input_values...);
   }
 };
-}  // namespace ctmm
+}  // namespace ctmm::details
 
 #endif  // CTMM_MAT_PRODUCT_EVALUATOR_H_

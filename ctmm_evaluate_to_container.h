@@ -32,9 +32,10 @@ namespace ctmm {
 template <MatExpression Expression>
 void EvaluateTo(MatValues auto &result_values,
                 const MatValues auto &...input_values) {
-  return ContainerEvaluator<Expression, Expression::kNumRows - 1,
-                            Expression::kNumCols -
-                                1>::EvaluateTo(result_values, input_values...);
+  return details::ContainerEvaluator<Expression, Expression::kNumRows - 1,
+                                     Expression::kNumCols -
+                                         1>::EvaluateTo(result_values,
+                                                        input_values...);
 }
 
 /**
