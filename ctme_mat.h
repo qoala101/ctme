@@ -22,6 +22,9 @@ class Mat {
   template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
   [[nodiscard]] static constexpr auto EvaluateCell(
       const MatValues auto &...input_values) {
+    static_assert(RowIndex < kNumRows);
+    static_assert(ColIndex < kNumCols);
+
     return std::get<ValuesIndex>(std::tie(input_values...))[RowIndex][ColIndex];
   }
 
