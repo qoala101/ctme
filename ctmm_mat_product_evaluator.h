@@ -1,22 +1,33 @@
-#ifndef STONKS_CTMM_MAT_PRODUCT_EVALUATOR_H_
-#define STONKS_CTMM_MAT_PRODUCT_EVALUATOR_H_
-#include <array>
-#include <tuple>
+#ifndef CTMM_MAT_PRODUCT_EVALUATOR_H_
+#define CTMM_MAT_PRODUCT_EVALUATOR_H_
 
-#include "ctmm_concepts.h"
-#include "ctmm_matrix_evaluator.h"
+#include "ctmm_concepts.h"  // IWYU pragma: keep
 
 namespace ctmm {
+/**
+ * @brief Recursively evaluates the value of the single cell in the product
+ * of two matrices.
+ *
+ * @tparam ValuesIndex Index of the values container to be used
+ * for the current matrix. Goes from size of value containers to zero.
+ *
+ * @tparam ProductIndex Index of the product of each left matrix row cell
+ * and each right matrix column cell, sum of which gives the result value.
+ * Goes from the number of columns in the first matrix to zero.
+ */
 template <MatExpression LeftMat, MatExpression RightMat, unsigned RowIndex,
-          unsigned ColIndex, unsigned InputIndex, unsigned ProductIndex>
+          unsigned ColIndex, unsigned ValuesIndex, unsigned ProductIndex>
 class MatProductEvaluator {
  public:
+  /**
+   * @brief Recursively evaluates the value of the single cell.
+   */
   [[nodiscard]] static constexpr auto Evaluate(
-      const Container2D auto &...inputs) {
-    auto result = EvaluateCurrentProduct(inputs...);
+      const MatValues auto &...input_values) {
+    auto result = EvaluateCurrentProduct(input_values...);
 
     if constexpr (ProductIndex > 0) {
-      result += EvaluateNextProduct(inputs...);
+      result += EvaluateNextProduct(input_values...);
     }
 
     return result;
@@ -24,32 +35,31 @@ class MatProductEvaluator {
 
  private:
   [[nodiscard]] static constexpr auto EvaluateLeftMatCellValue(
-      const Container2D auto &...inputs) {
-    return LeftMat::template Evaluate<
-        RowIndex, ProductIndex,
-        InputIndex - RightMat::kNumMats>(inputs...);
+      const MatValues auto &...input_values) {
+    return LeftMat::template Evaluate<RowIndex, ProductIndex,
+                                      ValuesIndex - RightMat::kNumMats>(
+        input_values...);
   }
 
   [[nodiscard]] static constexpr auto EvaluateRightMatCellValue(
-      const Container2D auto &...inputs) {
-    return RightMat::template Evaluate<
-        ProductIndex, ColIndex, InputIndex>(inputs...);
+      const MatValues auto &...input_values) {
+    return RightMat::template Evaluate<ProductIndex, ColIndex, ValuesIndex>(
+        input_values...);
   }
 
   [[nodiscard]] static constexpr auto EvaluateCurrentProduct(
-      const Container2D auto &...inputs) {
-    return EvaluateLeftMatCellValue(inputs...) *
-           EvaluateRightMatCellValue(inputs...);
+      const MatValues auto &...input_values) {
+    return EvaluateLeftMatCellValue(input_values...) *
+           EvaluateRightMatCellValue(input_values...);
   }
 
   [[nodiscard]] static constexpr auto EvaluateNextProduct(
-      const Container2D auto &...inputs) {
+      const MatValues auto &...input_values) {
     return MatProductEvaluator<LeftMat, RightMat, RowIndex, ColIndex,
-                               InputIndex,
-                               ProductIndex - 1>::Evaluate(inputs...);
+                               ValuesIndex,
+                               ProductIndex - 1>::Evaluate(input_values...);
   }
 };
+}  // namespace ctmm
 
-}
-
-#endif  // STONKS_CTMM_MAT_PRODUCT_EVALUATOR_H_
+#endif  // CTMM_MAT_PRODUCT_EVALUATOR_H_

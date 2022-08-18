@@ -1,16 +1,12 @@
-#ifndef STONKS_CTMM_MAT_PRODUCT_H_
-#define STONKS_CTMM_MAT_PRODUCT_H_
+#ifndef CTMM_MAT_PRODUCT_H_
+#define CTMM_MAT_PRODUCT_H_
 
-#include <array>
-#include <tuple>
-
-#include "ctmm_concepts.h"
+#include "ctmm_concepts.h"  // IWYU pragma: keep
 #include "ctmm_mat_product_evaluator.h"
-#include "ctmm_matrix_evaluator.h"
 
 namespace ctmm {
 /**
- * @brief Multiplication product of two 2D matrices.
+ * @brief Multiplication product of two matrices.
  */
 template <MatExpression LeftMat, MatExpression RightMat>
 class MatProduct {
@@ -21,37 +17,19 @@ class MatProduct {
   static constexpr unsigned kNumCols = RightMat::kNumCols;
   static constexpr unsigned kNumMats = LeftMat::kNumMats + RightMat::kNumMats;
 
-  template <unsigned RowIndex, unsigned ColIndex>
+  template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
   [[nodiscard]] static constexpr auto Evaluate(
-      const Container2D auto &...inputs) {
-    return Evaluate<RowIndex, ColIndex, sizeof...(inputs) - 1>(inputs...);
+      const MatValues auto &...input_values) {
+    return MatProductEvaluator<
+        LeftMat, RightMat, RowIndex, ColIndex, ValuesIndex,
+        LeftMat::kNumCols - 1>::Evaluate(input_values...);
   }
-
-  template <unsigned RowIndex, unsigned ColIndex, unsigned InputIndex>
-  [[nodiscard]] static constexpr auto Evaluate(
-      const Container2D auto &...inputs) {
-    return MatProductEvaluator<LeftMat, RightMat, RowIndex, ColIndex,
-                               InputIndex,
-                               LeftMat::kNumCols - 1>::Evaluate(inputs...);
-  }
-
-  // [[nodiscard]] static constexpr auto Evaluate(
-  //     const Container2D auto &...inputs) {
-  //   using ResultType = decltype(Evaluate<0, 0>(inputs...));
-
-  //   auto result = std::array<std::array<ResultType, kNumCols>, kNumRows>{};
-
-  //   MatrixEvaluator<MatProduct<LeftMat, RightMat>, kNumRows - 1,
-  //                   kNumCols - 1>::Evaluate(result, inputs...);
-
-  //   return result;
-  // }
 
   static_assert(MatExpression<MatProduct>);
 };
 
 /**
- * @brief Produces an object of type representing the matrix product.
+ * @brief Produces an object of matrix product type.
  */
 [[nodiscard]] constexpr auto operator*(const MatExpression auto &left_mat,
                                        const MatExpression auto &right_mat)
@@ -61,4 +39,4 @@ class MatProduct {
 }
 }  // namespace ctmm
 
-#endif  // STONKS_CTMM_MAT_PRODUCT_H_
+#endif  // CTMM_MAT_PRODUCT_H_
