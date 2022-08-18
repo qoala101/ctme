@@ -1,7 +1,6 @@
 #ifndef CTMM_H_
 #define CTMM_H_
 
-#include "ctmm_evaluate.h"
 #include "ctmm_mat.h"
 #include "ctmm_mat_product.h"
 
@@ -30,12 +29,12 @@
  * matrix:
  * @code
  *   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<4, 2>{};
- *   constexpr auto result = decltype(expression)::EvaluateCell(values1, values2,
- *   values3);
+ *   constexpr auto result = decltype(expression)::EvaluateCell(values1,
+ * values2, values3);
  * @endcode
  *
- * 5. Inputs are anything which supports syntax [unsigned][unsigned] to get the cell
- * value. Values must support operator* for each other:
+ * 5. Inputs are anything which supports syntax [unsigned][unsigned] to get the
+ * cell value. Values must support operator* for each other:
  * @code
  *   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<4, 2>{};
  *   constexpr auto values1 = std::array<std::array<3, int>>{};
@@ -49,18 +48,18 @@
  * 6. Providing wrong amount of values produces compile-time error:
  * @code
  *   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
- *   const auto result1 = decltype(expression)::EvaluateCell(values1, values2);  //
- *   OK
- *   const auto result2 = decltype(expression)::EvaluateCell(values1, values2,
- *   values3);  // Error
- *   const auto result3 = decltype(expression)::EvaluateCell(values1);  // Error
+ *   const auto result1 = decltype(expression)::EvaluateCell(values1, values2);
+ * // OK const auto result2 = decltype(expression)::EvaluateCell(values1,
+ * values2, values3);  // Error const auto result3 =
+ * decltype(expression)::EvaluateCell(values1);  // Error
  * @endcode
  *
  * 7. If all values are constexpr, evaluation result is also constexpr:
  * @code
  *   const auto values = std::vector<std::vector<int>>{};
  *   const auto result = decltype(expression)::EvaluateCell(vectors1, vectors1);
- *   constexpr auto result = decltype(expression)::EvaluateCell(arrays1, arrays1);
+ *   constexpr auto result = decltype(expression)::EvaluateCell(arrays1,
+ * arrays1);
  * @endcode
  *
  * 8. Cells can be evaluated one by one:
@@ -75,9 +74,9 @@
  * operate them without creating values:
  * @code
  *   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{} * Mat<4, 2>{});
- *   constexpr auto result = EvaluateCell<Expression>(values1, values2, values3);
- *   constexpr auto cell_0_0 = EvaluateCell<Expression, 0, 0>(values1, values2,
- *   values3);
+ *   constexpr auto result = EvaluateCell<Expression>(values1, values2,
+ * values3); constexpr auto cell_0_0 = EvaluateCell<Expression, 0, 0>(values1,
+ * values2, values3);
  * @endcode
  */
 

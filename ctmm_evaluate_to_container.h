@@ -7,7 +7,7 @@
 namespace ctmm {
 /**
  * @brief Evaluates the matrix expression and writes results
- * to the provided 2D container. Can be used to fill non-constexpr containers.
+ * to the provided 2D container. Can be used to fill containers in runtime.
  *
  * @tparam Expression Type of the matrix expression to be evaluated.
  * @param result_values 2D container with values writable
