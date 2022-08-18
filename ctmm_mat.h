@@ -1,5 +1,5 @@
-#ifndef STONKS_CTMM_MAT_H_
-#define STONKS_CTMM_MAT_H_
+#ifndef CTMM_MAT_H_
+#define CTMM_MAT_H_
 
 #include <tuple>
 
@@ -29,4 +29,4 @@ class Mat {
 };
 }  // namespace ctmm
 
-#endif  // STONKS_CTMM_MAT_H_
+#endif  // CTMM_MAT_H_

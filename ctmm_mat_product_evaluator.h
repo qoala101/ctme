@@ -10,7 +10,6 @@ namespace ctmm {
  *
  * @tparam ValuesIndex Index of the values container to be used
  * for the current matrix. Goes from size of value containers to zero.
- *
  * @tparam ProductIndex Index of the product of each left matrix row cell
  * and each right matrix column cell, sum of which gives the result value.
  * Goes from the number of columns in the first matrix to zero.

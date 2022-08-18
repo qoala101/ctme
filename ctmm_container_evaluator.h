@@ -8,9 +8,9 @@ namespace ctmm {
  * @brief Recursively evaluates the value for each expression result cell
  * and writes it to result container.
  *
- * @tparam Expression Type of the matrix expression to be evaluated. *
+ * @tparam Expression Type of the matrix expression to be evaluated.
  * @tparam RowIndex Currently evaluated row index. Goes form the number of rows
- * of the result to 0. *
+ * of the result to 0.
  * @tparam ColIndex Currently evaluated column index. Goes form the number of
  * columns of the result to 0.
  */

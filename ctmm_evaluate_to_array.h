@@ -12,11 +12,9 @@ namespace ctmm {
  * @brief Evaluates the matrix expression to array of arrays.
  *
  * @tparam Expression Type of the matrix expression to be evaluated.
- *
  * @param input_values 2D containers with values readable
  * by [unsigned][unsigned]. Amount must be equal to the amount of matrices
  * used to define the expression.
- *
  * @return Array of arrays. Value type is defined by the input values.
  */
 template <MatExpression Expression>

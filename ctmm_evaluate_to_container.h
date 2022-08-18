@@ -10,7 +10,6 @@ namespace ctmm {
  * to the provided 2D container. Can be used to fill non-constexpr containers.
  *
  * @tparam Expression Type of the matrix expression to be evaluated.
- *
  * @param result_values 2D container with values writable
  * by [unsigned][unsigned]. Size must be greater or equal to the size
  * of the matrix produced by the expression.
@@ -26,7 +25,6 @@ namespace ctmm {
  *
  *   EvaluateCell<Expression>(result_values, a_values, b_values, c_values);
  * @endcode
- *
  * @param input_values 2D containers with values readable
  * by [unsigned][unsigned]. Amount must be equal to the amount of matrices
  * used to define the expression.

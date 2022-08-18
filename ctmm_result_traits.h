@@ -19,7 +19,6 @@ struct ResultTraits {
  * of the matrix expression evaluation.
  *
  * @tparam Expression Type of matrix expression to be evaluated.
- *
  * @param input_values 2D containers with values readable
  * by [unsigned][unsigned]. Amount must be equal to the amount of matrices
  * used to define the expression. Used only to determine the type of the result,
@@ -29,7 +28,8 @@ template <MatExpression Expression>
 [[nodiscard]] constexpr auto GetResultTraits(
     const MatValues auto &...input_values) {
   using ResultType =
-      decltype(Expression::template EvaluateCell<0, 0, sizeof...(input_values) - 1>(
+      decltype(Expression::template EvaluateCell<0, 0,
+                                                 sizeof...(input_values) - 1>(
           input_values...));
   return ResultTraits<Expression::kNumRows, Expression::kNumCols, ResultType>{};
 }
