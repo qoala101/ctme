@@ -1,12 +1,17 @@
 #ifndef CTMM_TESTS_H_
 #define CTMM_TESTS_H_
 
+#include <array>
 #include <cassert>
+#include <ext/alloc_traits.h>
 #include <iostream>
-#include <tuple>
 #include <vector>
 
-#include "ctmm.h"
+#include "ctmm_evaluate_cell.h"
+#include "ctmm_evaluate_to_container.h"
+#include "ctmm_mat.h"
+#include "ctmm_mat_product.h"
+#include "ctmm_result_traits.h"
 
 namespace ctmm::tests {
 void Test2VectorsInt() {
@@ -22,13 +27,13 @@ void Test2VectorsInt() {
 
   auto value = 0;
 
-  value = Expression::Evaluate<0, 0>(a_values, b_values);
+  value = EvaluateCell<Expression, 0, 0>(a_values, b_values);
   assert(value == 832);
-  value = Evaluate<0, 1>(expression, a_values, b_values);
+  value = EvaluateCell<0, 1>(expression, a_values, b_values);
   assert(value == 868);
-  value = Expression::Evaluate<1, 0>(a_values, b_values);
+  value = EvaluateCell<Expression, 1, 0>(a_values, b_values);
   assert(value == 1039);
-  value = Expression::Evaluate<1, 1>(a_values, b_values);
+  value = EvaluateCell<Expression, 1, 1>(a_values, b_values);
   assert(value == 1084);
 }
 
@@ -42,28 +47,28 @@ void Test2VectorsInt() {
 
 //   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
 
-//   assert(expression.GetRow<0>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(a_values,
 //   b_values) >
 //          842);
-//   assert(expression.GetRow<0>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(a_values,
 //   b_values) <
 //          843);
-//   assert(expression.GetRow<0>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(a_values,
 //   b_values) >
 //          878);
-//   assert(expression.GetRow<0>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(a_values,
 //   b_values) <
 //          879);
-//   assert(expression.GetRow<1>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(a_values,
 //   b_values) >
 //          1050);
-//   assert(expression.GetRow<1>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(a_values,
 //   b_values) <
 //          1051);
-//   assert(expression.GetRow<1>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(a_values,
 //   b_values) >
 //          1095);
-//   assert(expression.GetRow<1>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(a_values,
 //   b_values) <
 //          1096);
 // }
@@ -82,35 +87,35 @@ void Test2VectorsInt() {
 
 //   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
 
-//   assert(expression.GetRow<0>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           56172);
-//   assert(expression.GetRow<0>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           57872);
-//   assert(expression.GetRow<0>().GetCol<2>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<2>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           59572);
-//   assert(expression.GetRow<0>().GetCol<3>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<3>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           61272);
-//   assert(expression.GetRow<1>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           70149);
-//   assert(expression.GetRow<1>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           72272);
-//   assert(expression.GetRow<1>().GetCol<2>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<2>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           74395);
-//   assert(expression.GetRow<1>().GetCol<3>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<3>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) ==
 //                                                           76518);
@@ -128,52 +133,52 @@ void Test2VectorsInt() {
 
 //   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
 
-//   assert(expression.GetRow<0>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 56580);
-//   assert(expression.GetRow<0>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 56581);
-//   assert(expression.GetRow<0>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 58287);
-//   assert(expression.GetRow<0>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 58288);
-//   assert(expression.GetRow<0>().GetCol<2>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<2>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 59994);
-//   assert(expression.GetRow<0>().GetCol<2>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<2>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 59995);
-//   assert(expression.GetRow<0>().GetCol<3>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<3>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 61701);
-//   assert(expression.GetRow<0>().GetCol<3>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<3>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 61702);
-//   assert(expression.GetRow<1>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 70659);
-//   assert(expression.GetRow<1>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 70660);
-//   assert(expression.GetRow<1>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 72791);
-//   assert(expression.GetRow<1>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 72792);
-//   assert(expression.GetRow<1>().GetCol<2>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<2>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 74923);
-//   assert(expression.GetRow<1>().GetCol<2>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<2>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 74924);
-//   assert(expression.GetRow<1>().GetCol<3>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<3>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) > 77055);
-//   assert(expression.GetRow<1>().GetCol<3>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<3>().EvaluateCell(a_values,
 //   b_values,
 //                                                           c_values) < 77056);
 // }
@@ -187,10 +192,10 @@ void Test2ArraysInt() {
 
   using Expr = decltype(Mat<2, 3>{} * Mat<3, 2>{});
 
-  static_assert(Expr::Evaluate<0, 0>(a_values, b_values) == 832);
-  static_assert(Expr::Evaluate<0, 1>(a_values, b_values) == 868);
-  static_assert(Expr::Evaluate<1, 0>(a_values, b_values) == 1039);
-  static_assert(Expr::Evaluate<1, 1>(a_values, b_values) == 1084);
+  static_assert(EvaluateCell<Expr, 0, 0>(a_values, b_values) == 832);
+  static_assert(EvaluateCell<Expr, 0, 1>(a_values, b_values) == 868);
+  static_assert(EvaluateCell<Expr, 1, 0>(a_values, b_values) == 1039);
+  static_assert(EvaluateCell<Expr, 1, 1>(a_values, b_values) == 1084);
 }
 
 // void Test2ArraysFloat() {
@@ -203,21 +208,21 @@ void Test2ArraysInt() {
 
 //   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
 
-//   static_assert(expression.GetRow<0>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values) > 842);
-//   static_assert(expression.GetRow<0>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values) < 843);
-//   static_assert(expression.GetRow<0>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values) > 878);
-//   static_assert(expression.GetRow<0>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values) < 879);
-//   static_assert(expression.GetRow<1>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values) > 1050);
-//   static_assert(expression.GetRow<1>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values) < 1051);
-//   static_assert(expression.GetRow<1>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values) > 1095);
-//   static_assert(expression.GetRow<1>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values) < 1096);
 // }
 
@@ -233,21 +238,21 @@ void Test2ArraysInt() {
 
 //   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
 
-//   static_assert(expression.GetRow<0>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values, c_values) == 56172);
-//   static_assert(expression.GetRow<0>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values, c_values) == 57872);
-//   static_assert(expression.GetRow<0>().GetCol<2>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<2>().EvaluateCell(
 //                     a_values, b_values, c_values) == 59572);
-//   static_assert(expression.GetRow<0>().GetCol<3>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<3>().EvaluateCell(
 //                     a_values, b_values, c_values) == 61272);
-//   static_assert(expression.GetRow<1>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values, c_values) == 70149);
-//   static_assert(expression.GetRow<1>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values, c_values) == 72272);
-//   static_assert(expression.GetRow<1>().GetCol<2>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<2>().EvaluateCell(
 //                     a_values, b_values, c_values) == 74395);
-//   static_assert(expression.GetRow<1>().GetCol<3>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<3>().EvaluateCell(
 //                     a_values, b_values, c_values) == 76518);
 // }
 
@@ -263,37 +268,37 @@ void Test2ArraysInt() {
 
 //   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{});
 
-//   static_assert(Expression::Evaluate<0, 0>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<0, 0>(a_values, b_values, c_values) >
 //                 56580);
-//   static_assert(Expression::Evaluate<0, 0>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<0, 0>(a_values, b_values, c_values) <
 //                 56581);
-//   static_assert(Expression::Evaluate<0, 1>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<0, 1>(a_values, b_values, c_values) >
 //                 58287);
-//   static_assert(Expression::Evaluate<0, 1>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<0, 1>(a_values, b_values, c_values) <
 //                 58288);
-//   static_assert(Expression::Evaluate<0, 2>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<0, 2>(a_values, b_values, c_values) >
 //                 59994);
-//   static_assert(Expression::Evaluate<0, 2>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<0, 2>(a_values, b_values, c_values) <
 //                 59995);
-//   static_assert(Expression::Evaluate<0, 3>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<0, 3>(a_values, b_values, c_values) >
 //                 61701);
-//   static_assert(Expression::Evaluate<0, 3>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<0, 3>(a_values, b_values, c_values) <
 //                 61702);
-//   static_assert(Expression::Evaluate<1, 0>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<1, 0>(a_values, b_values, c_values) >
 //                 70659);
-//   static_assert(Expression::Evaluate<1, 0>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<1, 0>(a_values, b_values, c_values) <
 //                 70660);
-//   static_assert(Expression::Evaluate<1, 1>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<1, 1>(a_values, b_values, c_values) >
 //                 72791);
-//   static_assert(Expression::Evaluate<1, 1>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<1, 1>(a_values, b_values, c_values) <
 //                 72792);
-//   static_assert(Expression::Evaluate<1, 2>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<1, 2>(a_values, b_values, c_values) >
 //                 74923);
-//   static_assert(Expression::Evaluate<1, 2>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<1, 2>(a_values, b_values, c_values) <
 //                 74924);
-//   static_assert(Expression::Evaluate<1, 3>(a_values, b_values, c_values) >
+//   static_assert(Expression::EvaluateCell<1, 3>(a_values, b_values, c_values) >
 //                 77055);
-//   static_assert(Expression::Evaluate<1, 3>(a_values, b_values, c_values) <
+//   static_assert(Expression::EvaluateCell<1, 3>(a_values, b_values, c_values) <
 //                 77056);
 // }
 
@@ -306,16 +311,16 @@ void Test2ArraysInt() {
 
 //   constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{};
 
-//   assert(expression.GetRow<0>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(a_values,
 //   b_values) ==
 //          832);
-//   assert(expression.GetRow<0>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(a_values,
 //   b_values) ==
 //          868);
-//   assert(expression.GetRow<1>().GetCol<0>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(a_values,
 //   b_values) ==
 //          1039);
-//   assert(expression.GetRow<1>().GetCol<1>().Evaluate(a_values,
+//   assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(a_values,
 //   b_values) ==
 //          1084);
 // }
@@ -332,9 +337,9 @@ void Test2ArraysInt() {
 //   constexpr auto expression1 = Mat<2, 3>{} * Mat<3, 2>{};
 //   constexpr auto expression = Mat<1, 2>{} * expression1;
 
-//   static_assert(expression.GetRow<0>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(
 //                     d_values, a_values, b_values) == 77750);
-//   static_assert(expression.GetRow<0>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(
 //                     d_values, a_values, b_values) == 81116);
 // }
 
@@ -349,13 +354,13 @@ void Test2ArraysInt() {
 //   constexpr auto expression2 = Mat<2, 3>{} * Mat<3, 2>{};
 //   constexpr auto expression = expression1 * expression2;
 
-//   static_assert(expression.GetRow<0>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values, a_values, b_values) == 1594076);
-//   static_assert(expression.GetRow<0>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<0>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values, a_values, b_values) == 1663088);
-//   static_assert(expression.GetRow<1>().GetCol<0>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<0>().EvaluateCell(
 //                     a_values, b_values, a_values, b_values) == 1990724);
-//   static_assert(expression.GetRow<1>().GetCol<1>().Evaluate(
+//   static_assert(expression.GetRow<1>().GetCol<1>().EvaluateCell(
 //                     a_values, b_values, a_values, b_values) == 2076908);
 // }
 
@@ -369,7 +374,9 @@ void TestFacadeInt() {
       std::array<int, 4>{31, 32, 33, 34}, std::array<int, 4>{35, 36, 37, 38}};
 
   using Expression = decltype(Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{});
-  // constexpr auto result1 = Evaluate<Expression>(a_values, b_values, c_values);
+  auto result1 =
+      std::array<std::array<int, Expression::kNumCols>, Expression::kNumRows>{};
+  EvaluateTo<Expression>(result1, a_values, b_values, c_values);
 
   // static_assert(result1[0][0] == 56172);
   // static_assert(result1[0][1] == 57872);
@@ -380,17 +387,36 @@ void TestFacadeInt() {
   // static_assert(result1[1][2] == 74395);
   // static_assert(result1[1][3] == 76518);
 
-  // constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
-  // constexpr auto result2 = Evaluate(expression, a_values, b_values, c_values);
+  constexpr auto expression = Mat<2, 3>{} * Mat<3, 2>{} * Mat<2, 4>{};
+  auto result2 = []() {
+    auto result2 =
+        std::vector<std::vector<int>>(decltype(expression)::kNumRows);
 
-  // static_assert(result2[0][0] == 56172);
-  // static_assert(result2[0][1] == 57872);
-  // static_assert(result2[0][2] == 59572);
-  // static_assert(result2[0][3] == 61272);
-  // static_assert(result2[1][0] == 70149);
-  // static_assert(result2[1][1] == 72272);
-  // static_assert(result2[1][2] == 74395);
-  // static_assert(result2[1][3] == 76518);
+    for (auto &row : result2) {
+      row.resize(decltype(expression)::kNumCols);
+    }
+
+    return result2;
+  }();
+  EvaluateTo(expression, result2, a_values, b_values, c_values);
+
+  assert(result2[0][0] == 56172);
+  assert(result2[0][1] == 57872);
+  assert(result2[0][2] == 59572);
+  assert(result2[0][3] == 61272);
+  assert(result2[1][0] == 70149);
+  assert(result2[1][1] == 72272);
+  assert(result2[1][2] == 74395);
+  assert(result2[1][3] == 76518);
+
+  using ResultTraits =
+      decltype(GetResultTraits<Expression>(a_values, b_values, c_values));
+
+  auto result =
+      std::array<std::array<ResultTraits::ValueType, ResultTraits::kNumCols>,
+                 ResultTraits::kNumRows>{};
+
+  EvaluateTo(expression, result, a_values, b_values, c_values);
 }
 
 // void TestFacadeIntFloatDouble() {

@@ -36,7 +36,7 @@ void EvaluateTo(MatValues auto &result_values,
                 const MatValues auto &...input_values) {
   return ContainerEvaluator<Expression, Expression::kNumRows - 1,
                             Expression::kNumCols -
-                                1>::EvaluateCell(result_values, input_values...);
+                                1>::EvaluateTo(result_values, input_values...);
 }
 
 /**

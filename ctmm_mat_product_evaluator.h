@@ -21,6 +21,8 @@ class MatProductEvaluator {
  public:
   /**
    * @brief Recursively evaluates the value of the single cell.
+   *
+   * @param input_values 2D containers with input values.
    */
   [[nodiscard]] static constexpr auto EvaluateCell(
       const MatValues auto &...input_values) {
@@ -37,7 +39,7 @@ class MatProductEvaluator {
   [[nodiscard]] static constexpr auto EvaluateLeftMatCellValue(
       const MatValues auto &...input_values) {
     return LeftMat::template EvaluateCell<RowIndex, ProductIndex,
-                                      ValuesIndex - RightMat::kNumMats>(
+                                          ValuesIndex - RightMat::kNumMats>(
         input_values...);
   }
 
