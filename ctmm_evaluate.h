@@ -25,7 +25,7 @@ template <MatExpression Expression, unsigned RowIndex, unsigned CellIndex>
 }
 
 /**
- * @copydoc Evaluate<MatExpression, unsigned, unsigned>
+ * @copydoc Evaluate<Expression, unsigned, unsigned>
  * @param expression Defines the type of the evaluated expression.
  */
 template <unsigned RowIndex, unsigned CellIndex>
@@ -37,14 +37,14 @@ template <unsigned RowIndex, unsigned CellIndex>
 
 /**
  * @brief Evaluates the matrix expression and writes results
- * to the provided 2D container.
+ * to the provided 2D container. Can be used to fill non-constexpr containers.
  *
  * @tparam Expression Type of the matrix expression to be evaluated.
  *
  * @param result_values 2D container with values writable
  * by [unsigned][unsigned]. Size must be greater or equal to the size
  * of the matrix produced by the expression.
- * @remark Type and size of the resulting matrix can be polled
+ * @remark Value type and size of the resulting matrix can be polled
  * via GetResultTraits in the following way:
  * @code
  *   using ResultTraits = decltype(GetResultTraits<Expression>(a_values,
@@ -70,7 +70,7 @@ void Evaluate(MatValues auto &result_values,
 }
 
 /**
- * @copydoc Evaluate<MatExpression>
+ * @copydoc Evaluate<Expression>
  * @param expression Defines the type of the evaluated expression.
  */
 void Evaluate(const MatExpression auto &expression,
