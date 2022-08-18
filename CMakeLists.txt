@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(CTMM_TESTS TRUE)
+set(CTME_TESTS TRUE)
 
-if(CTMM_TESTS)
+if(CTME_TESTS)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
@@ -27,6 +27,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 add_library(ctme INTERFACE)
 target_include_directories(ctme INTERFACE .)
 
-if(CTMM_TESTS)
+if(CTME_TESTS)
   add_subdirectory(test)
 endif()

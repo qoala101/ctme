@@ -1,5 +1,5 @@
-#ifndef CTMM_EVALUATE_AS_VECTOR_H_
-#define CTMM_EVALUATE_AS_VECTOR_H_
+#ifndef CTME_EVALUATE_AS_VECTOR_H_
+#define CTME_EVALUATE_AS_VECTOR_H_
 
 #include <vector>
 
@@ -45,4 +45,4 @@ template <MatExpression Expression>
 }
 }  // namespace ctme
 
-#endif  // CTMM_EVALUATE_AS_VECTOR_H_
+#endif  // CTME_EVALUATE_AS_VECTOR_H_

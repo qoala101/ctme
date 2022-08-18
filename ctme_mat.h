@@ -1,5 +1,5 @@
-#ifndef CTMM_MAT_H_
-#define CTMM_MAT_H_
+#ifndef CTME_MAT_H_
+#define CTME_MAT_H_
 
 #include <tuple>
 
@@ -29,4 +29,4 @@ class Mat {
 };
 }  // namespace ctme
 
-#endif  // CTMM_MAT_H_
+#endif  // CTME_MAT_H_

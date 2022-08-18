@@ -1,5 +1,5 @@
-#ifndef CTMM_CONCEPTS_H_
-#define CTMM_CONCEPTS_H_
+#ifndef CTME_CONCEPTS_H_
+#define CTME_CONCEPTS_H_
 
 #include <concepts>
 #include <iterator>
@@ -34,4 +34,4 @@ concept MatExpression = requires() {
 };
 }  // namespace ctme
 
-#endif  // CTMM_CONCEPTS_H_
+#endif  // CTME_CONCEPTS_H_

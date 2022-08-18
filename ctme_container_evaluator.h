@@ -1,5 +1,5 @@
-#ifndef CTMM_CONTAINER_EVALUATOR_H_
-#define CTMM_CONTAINER_EVALUATOR_H_
+#ifndef CTME_CONTAINER_EVALUATOR_H_
+#define CTME_CONTAINER_EVALUATOR_H_
 
 #include "ctme_concepts.h"  // IWYU pragma: keep
 
@@ -59,4 +59,4 @@ class ContainerEvaluator {
 };
 }  // namespace ctme::details
 
-#endif  // CTMM_CONTAINER_EVALUATOR_H_
+#endif  // CTME_CONTAINER_EVALUATOR_H_

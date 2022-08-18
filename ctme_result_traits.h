@@ -1,5 +1,5 @@
-#ifndef CTMM_RESULT_TRAITS_H_
-#define CTMM_RESULT_TRAITS_H_
+#ifndef CTME_RESULT_TRAITS_H_
+#define CTME_RESULT_TRAITS_H_
 
 #include "ctme_concepts.h"  // IWYU pragma: keep
 
@@ -45,4 +45,4 @@ template <MatExpression Expression>
 }
 }  // namespace ctme
 
-#endif  // CTMM_RESULT_TRAITS_H_
+#endif  // CTME_RESULT_TRAITS_H_

@@ -1,5 +1,5 @@
-#ifndef CTMM_MAT_PRODUCT_EVALUATOR_H_
-#define CTMM_MAT_PRODUCT_EVALUATOR_H_
+#ifndef CTME_MAT_PRODUCT_EVALUATOR_H_
+#define CTME_MAT_PRODUCT_EVALUATOR_H_
 
 #include "ctme_concepts.h"  // IWYU pragma: keep
 
@@ -63,4 +63,4 @@ class MatProductEvaluator {
 };
 }  // namespace ctme::details
 
-#endif  // CTMM_MAT_PRODUCT_EVALUATOR_H_
+#endif  // CTME_MAT_PRODUCT_EVALUATOR_H_

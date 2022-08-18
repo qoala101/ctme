@@ -1,5 +1,5 @@
-#ifndef CTMM_H_
-#define CTMM_H_
+#ifndef CTME_H_
+#define CTME_H_
 
 #include "ctme_mat.h"
 #include "ctme_mat_product.h"
@@ -80,4 +80,4 @@
  * @endcode
  */
 
-#endif  // CTMM_H_
+#endif  // CTME_H_

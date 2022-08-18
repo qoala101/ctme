@@ -1,5 +1,5 @@
-#ifndef CTMM_MAT_PRODUCT_H_
-#define CTMM_MAT_PRODUCT_H_
+#ifndef CTME_MAT_PRODUCT_H_
+#define CTME_MAT_PRODUCT_H_
 
 #include "ctme_concepts.h"  // IWYU pragma: keep
 #include "ctme_mat_product_evaluator.h"
@@ -39,4 +39,4 @@ class MatProduct {
 }
 }  // namespace ctme
 
-#endif  // CTMM_MAT_PRODUCT_H_
+#endif  // CTME_MAT_PRODUCT_H_

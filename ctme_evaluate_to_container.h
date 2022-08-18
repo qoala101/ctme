@@ -1,5 +1,5 @@
-#ifndef CTMM_EVALUATE_TO_2D_CONTAINER_H_
-#define CTMM_EVALUATE_TO_2D_CONTAINER_H_
+#ifndef CTME_EVALUATE_TO_2D_CONTAINER_H_
+#define CTME_EVALUATE_TO_2D_CONTAINER_H_
 
 #include "ctme_concepts.h"  // IWYU pragma: keep
 #include "ctme_container_evaluator.h"
@@ -50,4 +50,4 @@ void EvaluateTo(const MatExpression auto &expression,
 }
 }  // namespace ctme
 
-#endif  // STONKS_CTMM_EVALUATE_TO_2D_CONTAINER_H_
+#endif  // STONKS_CTME_EVALUATE_TO_2D_CONTAINER_H_
