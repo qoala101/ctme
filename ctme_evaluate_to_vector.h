@@ -21,14 +21,10 @@ template <MatExpression Expression>
 [[nodiscard]] constexpr auto EvaluateToVector(
     const MatValues auto &...input_values) {
   using ResultTraits = decltype(GetResultTraits<Expression>(input_values...));
+  using ValueType = typename ResultTraits::ValueType;
 
-  auto result_values =
-      std::vector<std::vector<typename ResultTraits::ValueType>>(
-          ResultTraits::kNumRows);
-
-  for (auto &row : result_values) {
-    row.resize(ResultTraits::kNumCols);
-  }
+  auto result_values = std::vector<std::vector<ValueType>>(
+      ResultTraits::kNumRows, std::vector<ValueType>(ResultTraits::kNumCols));
 
   EvaluateTo<Expression>(result_values, input_values...);
   return result_values;

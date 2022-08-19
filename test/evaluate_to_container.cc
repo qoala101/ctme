@@ -37,8 +37,7 @@ TEST(EvaluateToContainer, EvaluateToVector) {
   const auto values_3_2 = std::vector<std::vector<int64_t>>{
       std::vector<int64_t>{21, 22}, {23, 24}, {25, 26}};
 
-  auto result = std::vector<std::vector<int64_t>>{std::vector<int64_t>(2),
-                                                  std::vector<int64_t>(2)};
+  auto result = std::vector<std::vector<int64_t>>(2, std::vector<int64_t>(2));
   ctme::EvaluateTo(expression, result, values_2_3, values_3_2);
 
   const auto expected_result =
