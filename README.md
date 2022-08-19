@@ -46,6 +46,9 @@ const auto client_container_1_5 = ClientContainer<double>{1, 5};
 #### Evaluate the result to standard containers
 
 ```c++
+#include <ctme_evaluate_to_vector.h>
+#include <ctme_evaluate_to_container.h>
+
 const auto result_vector_2_5 = ctme::EvaluateToVector(
     product_of_products, array_2_3, vector_3_2, c_array_2_1, client_container_1_5);
 
@@ -57,6 +60,8 @@ const auto result_array_2_2 = ctme::EvaluateToArray(mat_product, array_2_3, vect
 #### Query result type and size prior to evaluation
 
 ```c++
+#include <ctme_result_traits.h>
+
 using ResultTraits = decltype(ctme::GetResultTraits(mat_product, array_2_3, vector_3_2));
 
 static_assert(std::is_same_v<ResultTraits::ValueType, int64_t>);
@@ -69,6 +74,8 @@ static_assert(ResultTraits::kNumCols == 2);
 #### Evaluate the result to any container which supports [unsigned][unsigned] syntax
 
 ```c++
+#include <ctme_evaluate_to_container.h>
+
 auto result = std::unique_ptr<ResultTraits::ValueType[][2]>{
     new ResultTraits::ValueType[ResultTraits::kNumRows][ResultTraits::kNumCols]{}};
 
@@ -80,10 +87,12 @@ ctme::EvaluateTo(mat_product, result, array_2_3, vector_3_2);
 #### Evaluate single cell
 
 ```c++
-const auto cell_0_0 = ctme::Evaluate<0, 0>(mat_product, array_2_3, vector_3_2);
-const auto cell_0_1 = ctme::Evaluate<0, 1>(mat_product, array_2_3, vector_3_2);
-const auto cell_1_0 = ctme::Evaluate<1, 0>(mat_product, array_2_3, vector_3_2);
-const auto cell_1_1 = ctme::Evaluate<1, 1>(mat_product, array_2_3, vector_3_2);
+#include <ctme_evaluate_cell.h>
+
+const auto cell_0_0 = ctme::EvaluateCell<0, 0>(mat_product, array_2_3, vector_3_2);
+const auto cell_0_1 = ctme::EvaluateCell<0, 1>(mat_product, array_2_3, vector_3_2);
+const auto cell_1_0 = ctme::EvaluateCell<1, 0>(mat_product, array_2_3, vector_3_2);
+const auto cell_1_1 = ctme::EvaluateCell<1, 1>(mat_product, array_2_3, vector_3_2);
 ```
 
 ---
@@ -99,19 +108,19 @@ constexpr auto array_3_2 = std::array<std::array<float, 2>, 3>{
     std::array<float, 2>{21.1, 22.1}, {23.1, 24.1}, {25.1, 26.1}};
 
 constexpr auto result = ctme::EvaluateToArray(mat_product, array_2_3, array_3_2);
-constexpr auto cell_0_0 = ctme::Evaluate<0, 0>(mat_product, array, vector);
+constexpr auto cell_0_0 = ctme::EvaluateCell<0, 0>(mat_product, array, vector);
 ```
 
 ---
 
-#### Evaluation logic is a property of expression type, so all APIs support it
+#### Evaluation logic is a property of expression type, so all APIs also support type syntax
 
 ```c++
 using ProductManualSyntax = ctme::MatProduct<ctme::Mat<2, 3>, ctme::Mat<3, 2>>;
 using ProductDecltypeSyntax = decltype(ctme::Mat<2, 3>{} * ctme::Mat<3, 2>{});
 
 constexpr auto result = ctme::EvaluateToArray<ProductManualSyntax>(array_2_3, array_3_2);
-constexpr auto cell_0_0 = ctme::Evaluate<ProductDecltypeSyntax, 0, 0>(array, vector);
+constexpr auto cell_0_0 = ctme::EvaluateCell<ProductDecltypeSyntax, 0, 0>(array, vector);
 ```
 
 ---
