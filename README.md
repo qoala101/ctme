@@ -1,6 +1,6 @@
 # Compile Time Matrix Evaluation
 
-Header-only C++ matrix evaluation library with zero memory overhead.
+Fast header-only C++ matrix evaluation library with zero memory overhead.
 
 ## Install
 
@@ -8,13 +8,12 @@ Copy headers to your build tree.
 
 ## Features
 
-- Computation doesn't need to create any additional matrices to store intermediate results.
-- Fast run time evaluation due to absence of loops (see [benchmarks](#benchmarks) below). All the evaluations are unrolled using TMP.
-- Compile time evaluation of matrix expressions of any size given compile time inputs.
+- No additional matrices are created during the computation to store intermediate results.
+- Fast run time evaluation due to absence of loops (see [benchmarks](#benchmarks) below). All the loops are unrolled using TMP.
+- Compile time evaluation of complex matrix expressions given compile time inputs.
 - Compile time expression correctness check (e.g. multiplying matrices of wrong sizes would not compile).
-- Ability to evaluate single cell.
-- Supports any containers which have [unsigned][unsigned] syntax.
-- Supports any combination of value types for which corresponding operations are available (e.g. \*, +, etc.).
+- Supports any containers which support [unsigned][unsigned] syntax.
+- Supports any combination of value types for which operations used in expressions are available (e.g. \*, +, etc.).
 - Matrix expressions can be formed as either objects or types.
 - Currently supported matrix operations: \*, +.
 
@@ -108,11 +107,11 @@ constexpr auto cell_0_0 = ctme::Evaluate<0, 0>(mat_product, array, vector);
 #### Evaluation logic is a property of expression type, so all APIs support it
 
 ```c++
-using Product = ctme::MatProduct<ctme::Mat<2, 3>, ctme::Mat<3, 2>>;
-using ProductOfProducts = ctme::MatProduct<Product, ctme::MatProduct<<ctme::Mat<2, 1>, ctme::Mat<1, 5>>>;
+using ProductManualSyntax = ctme::MatProduct<ctme::Mat<2, 3>, ctme::Mat<3, 2>>;
+using ProductDecltypeSyntax = decltype(ctme::Mat<2, 3>{} * ctme::Mat<3, 2>{});
 
-constexpr auto result = ctme::EvaluateToArray<Product>(array_2_3, array_3_2);
-constexpr auto cell_0_0 = ctme::Evaluate<0, 0>(mat_product, array, vector);
+constexpr auto result = ctme::EvaluateToArray<ProductManualSyntax>(array_2_3, array_3_2);
+constexpr auto cell_0_0 = ctme::Evaluate<ProductDecltypeSyntax, 0, 0>(array, vector);
 ```
 
 ---
