@@ -136,18 +136,18 @@ constexpr auto cell_0_0 = ctme::EvaluateCell<ProductDecltypeSyntax, 0, 0>(array,
 ### Compile time multiplication
 
 ```
----------------------------------------------------
-Benchmark                         Time   Iterations
----------------------------------------------------
-Product of 2 NxN mats/N:6       4.32 s          100
-Product of 2 NxN mats/N:9      12.11 s          100
-Product of 2 NxN mats/N:12     29.90 s          100
-Product of 2 NxN mats/N:15     45.76 s          100
+-----------------------------------------------------
+Benchmark                           Time   Iterations
+-----------------------------------------------------
+Product of 2 NxN mats/N:6        43.2 ms          100
+Product of 2 NxN mats/N:9       121.1 ms          100
+Product of 2 NxN mats/N:12        299 ms          100
+Product of 2 NxN mats/N:15      457.6 ms          100
 
-Product of N 4x4 mats/N:2       1.04 s          100
-Product of N 4x4 mats/N:3       1.36 s          100
-Product of N 4x4 mats/N:4       3.80 s          100
-Product of N 4x4 mats/N:5      12.71 s          100
+Product of N 4x4 mats/N:2        10.4 ms          100
+Product of N 4x4 mats/N:3        13.6 ms          100
+Product of N 4x4 mats/N:4          38 ms          100
+Product of N 4x4 mats/N:5       127.1 ms          100
 ```
 
 ### Runtime multiplication compared to simple for-loop multiplication
