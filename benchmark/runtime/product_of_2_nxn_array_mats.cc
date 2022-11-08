@@ -7,7 +7,7 @@
 #include "ctme_mat_product.h"
 #include "utils.h"
 
-namespace p_2_nxn_array {
+namespace {
 struct Inputs {
   // clang-format off
   const std::array<std::array<double, 1>, 1> values0_1_1{utils::GenerateRandomValues<utils::AsArray, 1, 1>()}, values1_1_1{utils::GenerateRandomValues<utils::AsArray, 1, 1>()};
@@ -77,16 +77,14 @@ void MultiplyMatsWithCtme(benchmark::State& state) {
     // clang-format on
   }
 }
-}  // namespace p_2_nxn_array
 
-namespace {
-BENCHMARK(p_2_nxn_array::MultiplyMatsWithLoops)
+BENCHMARK(MultiplyMatsWithLoops)
     ->Name("Product of two NxN std::array<double> mats with loops")
     ->ArgName("N")
     ->DenseRange(1, 9)
     ->DenseRange(10, 18, 2);
 
-BENCHMARK(p_2_nxn_array::MultiplyMatsWithCtme)
+BENCHMARK(MultiplyMatsWithCtme)
     ->Name("Product of two NxN std::array<double> mats with CTME")
     ->ArgName("N")
     ->DenseRange(1, 9)

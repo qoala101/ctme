@@ -7,7 +7,7 @@
 #include "ctme_mat_product.h"
 #include "utils.h"
 
-namespace p_n_4x4_array {
+namespace {
 struct Inputs {
   // clang-format off
   const std::array<std::array<double, 4>, 4>
@@ -66,15 +66,13 @@ void MultiplyMatsWithCtme(benchmark::State& state) {
     // clang-format on
   }
 }
-}  // namespace p_n_4x4_array
 
-namespace {
-BENCHMARK(p_n_4x4_array::MultiplyMatsWithLoops)
+BENCHMARK(MultiplyMatsWithLoops)
     ->Name("Product of N 4x4 std::array<double> mats with loops")
     ->ArgName("N")
     ->DenseRange(2, 10);
 
-BENCHMARK(p_n_4x4_array::MultiplyMatsWithCtme)
+BENCHMARK(MultiplyMatsWithCtme)
     ->Name("Product of N 4x4 std::array<double> mats with CTME")
     ->ArgName("N")
     ->DenseRange(2, 10);

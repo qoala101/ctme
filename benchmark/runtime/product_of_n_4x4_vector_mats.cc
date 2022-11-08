@@ -7,7 +7,7 @@
 #include "ctme_mat_product.h"
 #include "utils.h"
 
-namespace p_n_4x4_vector {
+namespace {
 struct Inputs {
   // clang-format off
   const std::vector<std::vector<double>>
@@ -66,15 +66,13 @@ void MultiplyMatsWithCtme(benchmark::State& state) {
     // clang-format on
   }
 }
-}  // namespace p_n_4x4_vector
 
-namespace {
-BENCHMARK(p_n_4x4_vector::MultiplyMatsWithLoops)
+BENCHMARK(MultiplyMatsWithLoops)
     ->Name("Product of N 4x4 std::vector<double> mats with loops")
     ->ArgName("N")
     ->DenseRange(2, 10);
 
-BENCHMARK(p_n_4x4_vector::MultiplyMatsWithCtme)
+BENCHMARK(MultiplyMatsWithCtme)
     ->Name("Product of N 4x4 std::vector<double> mats with CTME")
     ->ArgName("N")
     ->DenseRange(2, 10);

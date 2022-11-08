@@ -1,5 +1,5 @@
-#ifndef CTME_BENCHMARK_UTILS_H_
-#define CTME_BENCHMARK_UTILS_H_
+#ifndef CTME_BENCHMARK_RUNTIME_UTILS_H_
+#define CTME_BENCHMARK_RUNTIME_UTILS_H_
 
 #include <array>
 #include <random>
@@ -61,4 +61,4 @@ template <typename ContainerCreator, unsigned LeftNumRows, unsigned CommonNum,
 }
 }  // namespace utils
 
-#endif  // CTME_BENCHMARK_UTILS_H_
+#endif  // CTME_BENCHMARK_RUNTIME_UTILS_H_
