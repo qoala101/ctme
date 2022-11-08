@@ -46,8 +46,8 @@ const auto client_container_1_5 = ClientContainer<double>{1, 5};
 #### Evaluate the result to standard containers
 
 ```c++
+#include <ctme_evaluate_to_array.h>
 #include <ctme_evaluate_to_vector.h>
-#include <ctme_evaluate_to_container.h>
 
 const auto result_vector_2_5 = ctme::EvaluateToVector(
     product_of_products, array_2_3, vector_3_2, c_array_2_1, client_container_1_5);

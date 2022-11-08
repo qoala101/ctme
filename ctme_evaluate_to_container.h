@@ -23,7 +23,7 @@ namespace ctme {
  *       std::array<std::array<ResultTraits::Type, ResultTraits::kNumCols>,
  *                  ResultTraits::kNumRows>{};
  *
- *   EvaluateCell<Expression>(result_values, a_values, b_values, c_values);
+ *   EvaluateTo<Expression>(result_values, a_values, b_values, c_values);
  * @endcode
  * @param input_values 2D containers with values readable
  * by [unsigned][unsigned]. Amount must be equal to the amount of matrices
