@@ -37,5 +37,3 @@ endif()
 if(CTME_BUILD_BENCHMARKS)
   add_subdirectory(benchmark)
 endif()
-
-add_executable(ctme00 test.cpp)

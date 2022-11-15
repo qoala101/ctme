@@ -24,8 +24,8 @@ class MatProductEvaluator {
    *
    * @param input_values 2D containers with input values.
    */
-  [[nodiscard]] static constexpr auto EvaluateCell(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateCell
+      [[nodiscard]] (const MatValues auto &...input_values) {
     if constexpr (ProductIndex > 0) {
       return EvaluateCurrentProduct(input_values...) +
              EvaluateNextProduct(input_values...);
@@ -35,15 +35,15 @@ class MatProductEvaluator {
   }
 
  private:
-  [[nodiscard]] static constexpr auto EvaluateLeftMatCellValue(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateLeftMatCellValue
+      [[nodiscard]] (const MatValues auto &...input_values) {
     return LeftMat::template EvaluateCell<RowIndex, ProductIndex,
                                           ValuesIndex - RightMat::kNumMats>(
         input_values...);
   }
 
-  [[nodiscard]] static constexpr auto EvaluateRightMatCellValue(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateRightMatCellValue
+      [[nodiscard]] (const MatValues auto &...input_values) {
 #ifdef CTME_DEBUG
     debug::Logger::Instance().Print() << " * ";
 #endif  // CTME_DEBUG
@@ -51,14 +51,14 @@ class MatProductEvaluator {
         input_values...);
   }
 
-  [[nodiscard]] static constexpr auto EvaluateCurrentProduct(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateCurrentProduct
+      [[nodiscard]] (const MatValues auto &...input_values) {
     return EvaluateLeftMatCellValue(input_values...) *
            EvaluateRightMatCellValue(input_values...);
   }
 
-  [[nodiscard]] static constexpr auto EvaluateNextProduct(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateNextProduct
+      [[nodiscard]] (const MatValues auto &...input_values) {
 #ifdef CTME_DEBUG
     debug::Logger::Instance().Print() << " +\n";
 #endif  // CTME_DEBUG

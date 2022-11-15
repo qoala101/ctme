@@ -9,9 +9,7 @@ namespace ctme {
  * @brief Container of values accessible by [unsigned][unsigned] syntax.
  */
 template <typename T>
-concept MatValues = requires(const T &t, unsigned index) {
-  t[index][index];
-};
+concept MatValues = requires(const T &t, unsigned index) { t[index][index]; };
 
 /**
  * @brief Object that behaves like a matrix which has a size and could be
@@ -27,10 +25,16 @@ concept MatValues = requires(const T &t, unsigned index) {
  */
 template <typename T>
 concept MatExpression = requires() {
-  { T::kNumRows } -> std::convertible_to<const unsigned>;
-  { T::kNumCols } -> std::convertible_to<const unsigned>;
-  { T::kNumMats } -> std::convertible_to<const unsigned>;
-};
+                          {
+                            T::kNumRows
+                            } -> std::convertible_to<const unsigned>;
+                          {
+                            T::kNumCols
+                            } -> std::convertible_to<const unsigned>;
+                          {
+                            T::kNumMats
+                            } -> std::convertible_to<const unsigned>;
+                        };
 }  // namespace ctme
 
 #endif  // CTME_CONCEPTS_H_

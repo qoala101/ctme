@@ -35,7 +35,7 @@ struct OneMat {
       utils::CreateMat<4, 4>());
 };
 
-template<unsigned I>
+template <unsigned I>
 struct TenMats {
   static constexpr auto mat0 = OneMat<0>{};
   static constexpr auto mat1 = OneMat<1>{};

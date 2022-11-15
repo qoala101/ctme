@@ -5,7 +5,7 @@
 
 namespace utils {
 template <unsigned NumRows, unsigned NumCols>
-[[nodiscard]] consteval auto CreateMat() {
+consteval auto CreateMat [[nodiscard]] () {
   return std::array<std::array<int, NumCols>, NumRows>{2};
 }
 }  // namespace utils

@@ -28,7 +28,7 @@ struct Inputs {
   // clang-format on
 };
 
-[[nodiscard]] auto GetInputs() -> auto& {
+auto GetInputs [[nodiscard]] () -> auto& {
   static const auto kInputs = Inputs{};
   return kInputs;
 }

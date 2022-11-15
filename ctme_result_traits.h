@@ -25,8 +25,8 @@ struct ResultTraits {
  * so could be empty.
  */
 template <MatExpression Expression>
-[[nodiscard]] constexpr auto GetResultTraits(
-    const MatValues auto &...input_values) {
+constexpr auto GetResultTraits
+    [[nodiscard]] (const MatValues auto &...input_values) {
   using ResultType =
       decltype(Expression::template EvaluateCell<0, 0,
                                                  sizeof...(input_values) - 1>(
@@ -38,9 +38,9 @@ template <MatExpression Expression>
  * @copydoc GetResultTraits<MatExpression>
  * @param expression Defines the type of the evaluated expression.
  */
-[[nodiscard]] constexpr auto GetResultTraits(
-    const MatExpression auto &expression,
-    const MatValues auto &...input_values) {
+constexpr auto GetResultTraits
+    [[nodiscard]] (const MatExpression auto &expression,
+                   const MatValues auto &...input_values) {
   return GetResultTraits<std::decay_t<decltype(expression)>>(input_values...);
 }
 }  // namespace ctme

@@ -18,8 +18,8 @@ namespace ctme {
  * @return Vector of vectors. Value type is defined by the input values.
  */
 template <MatExpression Expression>
-[[nodiscard]] constexpr auto EvaluateToVector(
-    const MatValues auto &...input_values) {
+constexpr auto EvaluateToVector
+    [[nodiscard]] (const MatValues auto &...input_values) {
   using ResultTraits = decltype(GetResultTraits<Expression>(input_values...));
   using ValueType = typename ResultTraits::ValueType;
 
@@ -34,9 +34,9 @@ template <MatExpression Expression>
  * @copydoc EvaluateToVector<Expression>
  * @param expression Defines the type of the evaluated expression.
  */
-[[nodiscard]] constexpr auto EvaluateToVector(
-    const MatExpression auto &expression,
-    const MatValues auto &...input_values) {
+constexpr auto EvaluateToVector
+    [[nodiscard]] (const MatExpression auto &expression,
+                   const MatValues auto &...input_values) {
   return EvaluateToVector<std::decay_t<decltype(expression)>>(input_values...);
 }
 }  // namespace ctme

@@ -20,22 +20,22 @@ class MatSumEvaluator {
    *
    * @param input_values 2D containers with input values.
    */
-  [[nodiscard]] static constexpr auto EvaluateCell(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateCell
+      [[nodiscard]] (const MatValues auto &...input_values) {
     return EvaluateLeftMatCellValue(input_values...) +
            EvaluateRightMatCellValue(input_values...);
   }
 
  private:
-  [[nodiscard]] static constexpr auto EvaluateLeftMatCellValue(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateLeftMatCellValue
+      [[nodiscard]] (const MatValues auto &...input_values) {
     return LeftMat::template EvaluateCell<RowIndex, ColIndex,
                                           ValuesIndex - RightMat::kNumMats>(
         input_values...);
   }
 
-  [[nodiscard]] static constexpr auto EvaluateRightMatCellValue(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateRightMatCellValue
+      [[nodiscard]] (const MatValues auto &...input_values) {
     return RightMat::template EvaluateCell<RowIndex, ColIndex, ValuesIndex>(
         input_values...);
   }

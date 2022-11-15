@@ -21,8 +21,8 @@ class Mat {
   static constexpr unsigned kNumMats = 1;
 
   template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
-  [[nodiscard]] static constexpr auto EvaluateCell(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateCell
+      [[nodiscard]] (const MatValues auto &...input_values) {
     static_assert(RowIndex < kNumRows);
     static_assert(ColIndex < kNumCols);
 #ifdef CTME_DEBUG

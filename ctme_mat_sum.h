@@ -19,8 +19,8 @@ class MatSum {
   static constexpr unsigned kNumMats = LeftMat::kNumMats + RightMat::kNumMats;
 
   template <unsigned RowIndex, unsigned ColIndex, unsigned ValuesIndex>
-  [[nodiscard]] static constexpr auto EvaluateCell(
-      const MatValues auto &...input_values) {
+  static constexpr auto EvaluateCell
+      [[nodiscard]] (const MatValues auto &...input_values) {
     return details::MatSumEvaluator<LeftMat, RightMat, RowIndex, ColIndex,
                                     ValuesIndex>::EvaluateCell(input_values...);
   }
@@ -31,8 +31,8 @@ class MatSum {
 /**
  * @brief Produces an object of matrix sum type.
  */
-[[nodiscard]] constexpr auto operator+(const MatExpression auto &left_mat,
-                                       const MatExpression auto &right_mat) {
+constexpr auto operator+ [[nodiscard]] (const MatExpression auto &left_mat,
+                                        const MatExpression auto &right_mat) {
   return MatSum<std::decay_t<decltype(left_mat)>,
                 std::decay_t<decltype(right_mat)>>{};
 }

@@ -10,21 +10,21 @@
 namespace utils {
 struct AsArray {
   template <unsigned NumRows, unsigned NumCols>
-  [[nodiscard]] static auto Create() {
+  static auto Create [[nodiscard]] () {
     return std::array<std::array<double, NumRows>, NumCols>{};
   }
 };
 
 struct AsVector {
   template <unsigned NumRows, unsigned NumCols>
-  [[nodiscard]] static auto Create() {
+  static auto Create [[nodiscard]] () {
     return std::vector<std::vector<double>>(NumRows,
                                             std::vector<double>(NumCols, 0));
   }
 };
 
 template <typename ContainerCreator, unsigned NumRows, unsigned NumCols>
-[[nodiscard]] auto GenerateRandomValues() {
+auto GenerateRandomValues [[nodiscard]] () {
   auto values = ContainerCreator::template Create<NumRows, NumCols>();
 
   auto random_engine = std::default_random_engine{};
@@ -41,8 +41,8 @@ template <typename ContainerCreator, unsigned NumRows, unsigned NumCols>
 
 template <typename ContainerCreator, unsigned LeftNumRows, unsigned CommonNum,
           unsigned RightNumCols>
-[[nodiscard]] auto MultiplyWithLoops(const ctme::MatValues auto& left_mat,
-                                     const ctme::MatValues auto& right_mat) {
+auto MultiplyWithLoops [[nodiscard]] (const ctme::MatValues auto& left_mat,
+                                      const ctme::MatValues auto& right_mat) {
   auto result = ContainerCreator::template Create<CommonNum, CommonNum>();
 
   for (auto i = 0; i < LeftNumRows; ++i) {

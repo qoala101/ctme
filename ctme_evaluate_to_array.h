@@ -18,8 +18,8 @@ namespace ctme {
  * @return Array of arrays. Value type is defined by the input values.
  */
 template <MatExpression Expression>
-[[nodiscard]] constexpr auto EvaluateToArray(
-    const MatValues auto &...input_values) {
+constexpr auto EvaluateToArray
+    [[nodiscard]] (const MatValues auto &...input_values) {
   using ResultTraits = decltype(GetResultTraits<Expression>(input_values...));
 
   auto result_values = std::array<
@@ -34,9 +34,9 @@ template <MatExpression Expression>
  * @copydoc EvaluateToArray<Expression>
  * @param expression Defines the type of the evaluated expression.
  */
-[[nodiscard]] constexpr auto EvaluateToArray(
-    const MatExpression auto &expression,
-    const MatValues auto &...input_values) {
+constexpr auto EvaluateToArray
+    [[nodiscard]] (const MatExpression auto &expression,
+                   const MatValues auto &...input_values) {
   return EvaluateToArray<std::decay_t<decltype(expression)>>(input_values...);
 }
 }  // namespace ctme
