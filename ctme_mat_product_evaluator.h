@@ -25,13 +25,12 @@ class MatProductEvaluator {
    */
   [[nodiscard]] static constexpr auto EvaluateCell(
       const MatValues auto &...input_values) {
-    auto result = EvaluateCurrentProduct(input_values...);
-
     if constexpr (ProductIndex > 0) {
-      result += EvaluateNextProduct(input_values...);
+      return EvaluateCurrentProduct(input_values...) +
+             EvaluateNextProduct(input_values...);
+    } else {
+      return EvaluateCurrentProduct(input_values...);
     }
-
-    return result;
   }
 
  private:

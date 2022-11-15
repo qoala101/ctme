@@ -9,7 +9,7 @@ endif()
 
 project(
   "ctme"
-  VERSION 0.0.1
+  VERSION 0.1.0
   LANGUAGES CXX
 )
 
@@ -37,3 +37,5 @@ endif()
 if(CTME_BUILD_BENCHMARKS)
   add_subdirectory(benchmark)
 endif()
+
+add_executable(ctme00 test.cpp)

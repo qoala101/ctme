@@ -1,5 +1,5 @@
-#ifndef CTME_EVALUATE_AS_ARRAY_H_
-#define CTME_EVALUATE_AS_ARRAY_H_
+#ifndef CTME_EVALUATE_TO_ARRAY_H_
+#define CTME_EVALUATE_TO_ARRAY_H_
 
 #include <array>
 
@@ -41,4 +41,4 @@ template <MatExpression Expression>
 }
 }  // namespace ctme
 
-#endif  // CTME_EVALUATE_AS_ARRAY_H_
+#endif  // CTME_EVALUATE_TO_ARRAY_H_
