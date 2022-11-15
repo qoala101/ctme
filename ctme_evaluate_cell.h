@@ -1,7 +1,8 @@
 #ifndef CTME_EVALUATE_CELL_H_
 #define CTME_EVALUATE_CELL_H_
 
-#include "ctme_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"      // IWYU pragma: keep
+#include "ctme_debug_logger.h"  // IWYU pragma: keep
 
 namespace ctme {
 /**
@@ -17,6 +18,9 @@ namespace ctme {
 template <MatExpression Expression, unsigned RowIndex, unsigned ColIndex>
 [[nodiscard]] constexpr auto EvaluateCell(
     const MatValues auto &...input_values) {
+#ifdef CTME_DEBUG
+  debug::Logger::Instance().PrintEvaluatingCell(RowIndex, ColIndex);
+#endif  // CTME_DEBUG
   return Expression::template EvaluateCell<RowIndex, ColIndex,
                                            sizeof...(input_values) - 1>(
       input_values...);

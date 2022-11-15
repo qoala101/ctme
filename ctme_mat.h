@@ -3,7 +3,8 @@
 
 #include <tuple>
 
-#include "ctme_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"      // IWYU pragma: keep
+#include "ctme_debug_logger.h"  // IWYU pragma: keep
 
 namespace ctme {
 /**
@@ -24,7 +25,10 @@ class Mat {
       const MatValues auto &...input_values) {
     static_assert(RowIndex < kNumRows);
     static_assert(ColIndex < kNumCols);
-
+#ifdef CTME_DEBUG
+    debug::Logger::Instance().PrintCell(
+        std::get<ValuesIndex>(std::tie(input_values...)), RowIndex, ColIndex);
+#endif
     return std::get<ValuesIndex>(std::tie(input_values...))[RowIndex][ColIndex];
   }
 

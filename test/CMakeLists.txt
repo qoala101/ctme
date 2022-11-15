@@ -5,6 +5,7 @@ include(GoogleTest)
 enable_testing()
 
 add_executable(tests
+  debug_logger.cc
   evaluate_cell.cc
   evaluate_to_array.cc
   evaluate_to_container.cc

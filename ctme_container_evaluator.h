@@ -1,7 +1,8 @@
 #ifndef CTME_CONTAINER_EVALUATOR_H_
 #define CTME_CONTAINER_EVALUATOR_H_
 
-#include "ctme_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"      // IWYU pragma: keep
+#include "ctme_debug_logger.h"  // IWYU pragma: keep
 
 namespace ctme::details {
 /**
@@ -26,6 +27,9 @@ class ContainerEvaluator {
    */
   static constexpr void EvaluateTo(MatValues auto &result_values,
                                    const MatValues auto &...input_values) {
+#ifdef CTME_DEBUG
+    debug::Logger::Instance().PrintEvaluatingCell(RowIndex, ColIndex);
+#endif  // CTME_DEBUG
     EvaluateCurrentCell(result_values, input_values...);
 
     if constexpr (ColIndex == 0) {

@@ -1,7 +1,8 @@
 #ifndef CTME_MAT_PRODUCT_EVALUATOR_H_
 #define CTME_MAT_PRODUCT_EVALUATOR_H_
 
-#include "ctme_concepts.h"  // IWYU pragma: keep
+#include "ctme_concepts.h"      // IWYU pragma: keep
+#include "ctme_debug_logger.h"  // IWYU pragma: keep
 
 namespace ctme::details {
 /**
@@ -43,6 +44,9 @@ class MatProductEvaluator {
 
   [[nodiscard]] static constexpr auto EvaluateRightMatCellValue(
       const MatValues auto &...input_values) {
+#ifdef CTME_DEBUG
+    debug::Logger::Instance().Print() << " * ";
+#endif  // CTME_DEBUG
     return RightMat::template EvaluateCell<ProductIndex, ColIndex, ValuesIndex>(
         input_values...);
   }
@@ -55,6 +59,9 @@ class MatProductEvaluator {
 
   [[nodiscard]] static constexpr auto EvaluateNextProduct(
       const MatValues auto &...input_values) {
+#ifdef CTME_DEBUG
+    debug::Logger::Instance().Print() << " +\n";
+#endif  // CTME_DEBUG
     return MatProductEvaluator<LeftMat, RightMat, RowIndex, ColIndex,
                                ValuesIndex,
                                ProductIndex - 1>::EvaluateCell(input_values...);
