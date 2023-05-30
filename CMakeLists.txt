@@ -29,6 +29,18 @@ add_library(ctme INTERFACE)
 target_include_directories(ctme INTERFACE .)
 
 if(BUILD_TESTS)
+  target_compile_options(ctme
+    INTERFACE
+    -fprofile-instr-generate
+    -fcoverage-mapping
+  )
+
+  target_link_options(ctme
+    INTERFACE
+    -fprofile-instr-generate
+    -fcoverage-mapping
+  )
+
   include(CTest)
   add_subdirectory(test)
 endif()
