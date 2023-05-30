@@ -1,21 +1,19 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(CTME_BUILD_TESTS TRUE)
-set(CTME_BUILD_BENCHMARKS TRUE)
+option(BUILD_TESTS "Whether to build tests.")
+option(BUILD_BENCHMARKS "Whether to build benchmarks including the compile time ones.")
 
-if(CTME_BUILD_TESTS OR CTME_BUILD_BENCHMARKS)
+if(BUILD_TESTS OR BUILD_BENCHMARKS)
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
 project(
   "ctme"
-  VERSION 0.1.0
+  VERSION 1.0.0
   LANGUAGES CXX
 )
 
-include(CTest)
-
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -30,10 +28,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 add_library(ctme INTERFACE)
 target_include_directories(ctme INTERFACE .)
 
-if(CTME_BUILD_TESTS)
+if(BUILD_TESTS)
+  include(CTest)
   add_subdirectory(test)
 endif()
 
-if(CTME_BUILD_BENCHMARKS)
+if(BUILD_BENCHMARKS)
   add_subdirectory(benchmark)
 endif()

@@ -1,3 +1,9 @@
+/**
+ * CTME @link https://github.com/qoala101/ctme @endlink
+ * @author Volodymyr Hromakov (4y5t6r@gmail.com)
+ * @copyright Copyright (c) 2023, MIT License
+ */
+
 #ifndef VH_CTME_BENCHMARK_RUNTIME_UTILS_H_
 #define VH_CTME_BENCHMARK_RUNTIME_UTILS_H_
 
@@ -30,8 +36,8 @@ auto GenerateRandomValues [[nodiscard]] () {
   auto random_engine = std::default_random_engine{};
   auto distribution = std::uniform_real_distribution<double>{0, 10};
 
-  for (auto i = 0; i < NumRows; ++i) {
-    for (auto j = 0; j < NumCols; ++j) {
+  for (auto i = 0U; i < NumRows; ++i) {
+    for (auto j = 0U; j < NumCols; ++j) {
       values[i][j] = distribution(random_engine);
     }
   }
@@ -45,11 +51,11 @@ auto MultiplyWithLoops [[nodiscard]] (const ctme::MatValues auto& left_mat,
                                       const ctme::MatValues auto& right_mat) {
   auto result = ContainerCreator::template Create<CommonNum, CommonNum>();
 
-  for (auto i = 0; i < LeftNumRows; ++i) {
-    for (auto j = 0; j < RightNumCols; ++j) {
+  for (auto i = 0U; i < LeftNumRows; ++i) {
+    for (auto j = 0U; j < RightNumCols; ++j) {
       auto result_cell = double{};
 
-      for (auto k = 0; k < CommonNum; ++k) {
+      for (auto k = 0U; k < CommonNum; ++k) {
         result_cell += left_mat[i][k] * right_mat[k][j];
       }
 

@@ -1,3 +1,9 @@
+/**
+ * CTME @link https://github.com/qoala101/ctme @endlink
+ * @author Volodymyr Hromakov (4y5t6r@gmail.com)
+ * @copyright Copyright (c) 2023, MIT License
+ */
+
 #include <benchmark/benchmark.h>
 
 #include <array>
@@ -37,20 +43,20 @@ void MultiplyMatsWithLoops(benchmark::State& state) {
 
   for (auto unused : state) {
     // clang-format off
-    if (state.range() == 1) { auto result = utils::MultiplyWithLoops<utils::AsArray, 1, 1, 1>(inputs.values0_1_1, inputs.values1_1_1); }
-    if (state.range() == 2) { auto result = utils::MultiplyWithLoops<utils::AsArray, 2, 2, 2>(inputs.values0_2_2, inputs.values1_2_2); }
-    if (state.range() == 3) { auto result = utils::MultiplyWithLoops<utils::AsArray, 3, 3, 3>(inputs.values0_3_3, inputs.values1_3_3); }
-    if (state.range() == 4) { auto result = utils::MultiplyWithLoops<utils::AsArray, 4, 4, 4>(inputs.values0_4_4, inputs.values1_4_4); }
-    if (state.range() == 5) { auto result = utils::MultiplyWithLoops<utils::AsArray, 5, 5, 5>(inputs.values0_5_5, inputs.values1_5_5); }
-    if (state.range() == 6) { auto result = utils::MultiplyWithLoops<utils::AsArray, 6, 6, 6>(inputs.values0_6_6, inputs.values1_6_6); }
-    if (state.range() == 7) { auto result = utils::MultiplyWithLoops<utils::AsArray, 7, 7, 7>(inputs.values0_7_7, inputs.values1_7_7); }
-    if (state.range() == 8) { auto result = utils::MultiplyWithLoops<utils::AsArray, 8, 8, 8>(inputs.values0_8_8, inputs.values1_8_8); }
-    if (state.range() == 9) { auto result = utils::MultiplyWithLoops<utils::AsArray, 9, 9, 9>(inputs.values0_9_9, inputs.values1_9_9); }
-    if (state.range() == 10) { auto result = utils::MultiplyWithLoops<utils::AsArray, 10, 10, 10>(inputs.values0_10_10, inputs.values1_10_10); }
-    if (state.range() == 12) { auto result = utils::MultiplyWithLoops<utils::AsArray, 12, 12, 12>(inputs.values0_12_12, inputs.values1_12_12); }
-    if (state.range() == 14) { auto result = utils::MultiplyWithLoops<utils::AsArray, 14, 14, 14>(inputs.values0_14_14, inputs.values1_14_14); }
-    if (state.range() == 16) { auto result = utils::MultiplyWithLoops<utils::AsArray, 16, 16, 16>(inputs.values0_16_16, inputs.values1_16_16); }
-    if (state.range() == 18) { auto result = utils::MultiplyWithLoops<utils::AsArray, 18, 18, 18>(inputs.values0_18_18, inputs.values1_18_18); }
+    if (state.range() == 1) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 1, 1, 1>(inputs.values0_1_1, inputs.values1_1_1); }
+    if (state.range() == 2) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 2, 2, 2>(inputs.values0_2_2, inputs.values1_2_2); }
+    if (state.range() == 3) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 3, 3, 3>(inputs.values0_3_3, inputs.values1_3_3); }
+    if (state.range() == 4) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 4, 4, 4>(inputs.values0_4_4, inputs.values1_4_4); }
+    if (state.range() == 5) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 5, 5, 5>(inputs.values0_5_5, inputs.values1_5_5); }
+    if (state.range() == 6) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 6, 6, 6>(inputs.values0_6_6, inputs.values1_6_6); }
+    if (state.range() == 7) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 7, 7, 7>(inputs.values0_7_7, inputs.values1_7_7); }
+    if (state.range() == 8) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 8, 8, 8>(inputs.values0_8_8, inputs.values1_8_8); }
+    if (state.range() == 9) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 9, 9, 9>(inputs.values0_9_9, inputs.values1_9_9); }
+    if (state.range() == 10) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 10, 10, 10>(inputs.values0_10_10, inputs.values1_10_10); }
+    if (state.range() == 12) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 12, 12, 12>(inputs.values0_12_12, inputs.values1_12_12); }
+    if (state.range() == 14) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 14, 14, 14>(inputs.values0_14_14, inputs.values1_14_14); }
+    if (state.range() == 16) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 16, 16, 16>(inputs.values0_16_16, inputs.values1_16_16); }
+    if (state.range() == 18) { std::ignore = utils::MultiplyWithLoops<utils::AsArray, 18, 18, 18>(inputs.values0_18_18, inputs.values1_18_18); }
     // clang-format on
   }
 }
@@ -60,20 +66,20 @@ void MultiplyMatsWithCtme(benchmark::State& state) {
 
   for (auto unused : state) {
     // clang-format off
-    if (state.range() == 1) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<1, 1>{} * ctme::Mat<1, 1>{})>(inputs.values0_1_1, inputs.values1_1_1); }
-    if (state.range() == 2) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<2, 2>{} * ctme::Mat<2, 2>{})>(inputs.values0_2_2, inputs.values1_2_2); }
-    if (state.range() == 3) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<3, 3>{} * ctme::Mat<3, 3>{})>(inputs.values0_3_3, inputs.values1_3_3); }
-    if (state.range() == 4) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<4, 4>{} * ctme::Mat<4, 4>{})>(inputs.values0_4_4, inputs.values1_4_4); }
-    if (state.range() == 5) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<5, 5>{} * ctme::Mat<5, 5>{})>(inputs.values0_5_5, inputs.values1_5_5); }
-    if (state.range() == 6) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<6, 6>{} * ctme::Mat<6, 6>{})>(inputs.values0_6_6, inputs.values1_6_6); }
-    if (state.range() == 7) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<7, 7>{} * ctme::Mat<7, 7>{})>(inputs.values0_7_7, inputs.values1_7_7); }
-    if (state.range() == 8) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<8, 8>{} * ctme::Mat<8, 8>{})>(inputs.values0_8_8, inputs.values1_8_8); }
-    if (state.range() == 9) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<9, 9>{} * ctme::Mat<9, 9>{})>(inputs.values0_9_9, inputs.values1_9_9); }
-    if (state.range() == 10) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<10, 10>{} * ctme::Mat<10, 10>{})>(inputs.values0_10_10, inputs.values1_10_10); }
-    if (state.range() == 12) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<12, 12>{} * ctme::Mat<12, 12>{})>(inputs.values0_12_12, inputs.values1_12_12); }
-    if (state.range() == 14) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<14, 14>{} * ctme::Mat<14, 14>{})>(inputs.values0_14_14, inputs.values1_14_14); }
-    if (state.range() == 16) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<16, 16>{} * ctme::Mat<16, 16>{})>(inputs.values0_16_16, inputs.values1_16_16); }
-    if (state.range() == 18) { auto result = ctme::EvaluateToArray<decltype(ctme::Mat<18, 18>{} * ctme::Mat<18, 18>{})>(inputs.values0_18_18, inputs.values1_18_18); }
+    if (state.range() == 1) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<1, 1>{} * ctme::Mat<1, 1>{})>(inputs.values0_1_1, inputs.values1_1_1); }
+    if (state.range() == 2) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<2, 2>{} * ctme::Mat<2, 2>{})>(inputs.values0_2_2, inputs.values1_2_2); }
+    if (state.range() == 3) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<3, 3>{} * ctme::Mat<3, 3>{})>(inputs.values0_3_3, inputs.values1_3_3); }
+    if (state.range() == 4) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<4, 4>{} * ctme::Mat<4, 4>{})>(inputs.values0_4_4, inputs.values1_4_4); }
+    if (state.range() == 5) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<5, 5>{} * ctme::Mat<5, 5>{})>(inputs.values0_5_5, inputs.values1_5_5); }
+    if (state.range() == 6) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<6, 6>{} * ctme::Mat<6, 6>{})>(inputs.values0_6_6, inputs.values1_6_6); }
+    if (state.range() == 7) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<7, 7>{} * ctme::Mat<7, 7>{})>(inputs.values0_7_7, inputs.values1_7_7); }
+    if (state.range() == 8) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<8, 8>{} * ctme::Mat<8, 8>{})>(inputs.values0_8_8, inputs.values1_8_8); }
+    if (state.range() == 9) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<9, 9>{} * ctme::Mat<9, 9>{})>(inputs.values0_9_9, inputs.values1_9_9); }
+    if (state.range() == 10) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<10, 10>{} * ctme::Mat<10, 10>{})>(inputs.values0_10_10, inputs.values1_10_10); }
+    if (state.range() == 12) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<12, 12>{} * ctme::Mat<12, 12>{})>(inputs.values0_12_12, inputs.values1_12_12); }
+    if (state.range() == 14) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<14, 14>{} * ctme::Mat<14, 14>{})>(inputs.values0_14_14, inputs.values1_14_14); }
+    if (state.range() == 16) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<16, 16>{} * ctme::Mat<16, 16>{})>(inputs.values0_16_16, inputs.values1_16_16); }
+    if (state.range() == 18) { std::ignore = ctme::EvaluateToArray<decltype(ctme::Mat<18, 18>{} * ctme::Mat<18, 18>{})>(inputs.values0_18_18, inputs.values1_18_18); }
     // clang-format on
   }
 }

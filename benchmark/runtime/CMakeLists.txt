@@ -8,6 +8,7 @@ add_executable(benchmarks
 )
 
 target_link_libraries(benchmarks
-  PRIVATE ctme
-  PRIVATE benchmark::benchmark
+  PRIVATE
+  ctme
+  benchmark::benchmark
 )

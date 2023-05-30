@@ -4,7 +4,7 @@ include(GoogleTest)
 
 enable_testing()
 
-add_executable(tests
+add_executable(unittests
   debug_logger.cc
   evaluate_cell.cc
   evaluate_to_array.cc
@@ -16,9 +16,17 @@ add_executable(tests
   result_traits.cc
 )
 
-target_link_libraries(tests
-  PRIVATE ctme
-  PRIVATE GTest::gtest GTest::gtest_main
+target_link_libraries(unittests
+  PRIVATE
+  GTest::gtest
+  GTest::gtest_main
 )
 
-gtest_discover_tests(tests)
+# Has to come after linking to GTest and before other libs.
+# Otherwise tests in third-party libs would also be discovered.
+gtest_discover_tests(unittests)
+
+target_link_libraries(unittests
+  PRIVATE
+  ctme
+)

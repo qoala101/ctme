@@ -48,10 +48,12 @@ TEST(DebugLogger, Ability) {
   ctme::debug::Logger::Instance().RegisterMatName(m3, "m4");
 
   testing::internal::CaptureStdout();
-  const auto cell =
+
+  std::ignore =
       ctme::EvaluateCell<0, 0>(ctme::Mat<2, 3>{} * ctme::Mat<3, 2>{} *
                                    ctme::Mat<2, 4>{} * ctme::Mat<4, 4>{},
                                m0, m1, m2, m3);
+
   EXPECT_EQ(testing::internal::GetCapturedStdout(), R"(
 
 Evaluating cell (0, 0):
