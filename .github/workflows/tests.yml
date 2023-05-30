@@ -40,7 +40,7 @@ jobs:
       - name: Record coverage
         run: |
           llvm-profdata merge -sparse ./default.profraw -o default.profdata
-          llvm-cov export --format=lcov --instr-profile ./default.profdata ./bin/unittests > ./coverage.info
+          llvm-cov export --format=lcov --instr-profile ./default.profdata --ignore-filename-regex=".*test[/\\].*" ./bin/unittests > ./coverage.info
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
