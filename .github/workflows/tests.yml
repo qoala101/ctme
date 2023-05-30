@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Clang
+        uses: egor-tensin/setup-clang@v1
+
+      - name: Build Conan Dependencies
+        run: |
+          pip install conan==1.60.0
+          conan install . --build=missing -pr=./conanprofile.txt -if ./build
+
+      - name: Configure CMake
+        run: cmake -B ./build -DBUILD_TESTS=ON
+
+      - name: Build Tests
+        run: cmake --build ./build
+
+      - name: Run Tests
+        run: ctest --test-dir  ./build

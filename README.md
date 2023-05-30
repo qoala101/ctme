@@ -1,5 +1,12 @@
 # Compile Time Matrix Evaluation
 
+[![Tests](https://github.com/qoala101/ctme/actions/workflows/tests.yml/badge.svg)](https://github.com/qoala101/ctme/actions/workflows/tests.yml)
+[![Codecov](https://codecov.io/gh/qoala101/ctme/branch/master/graph/badge.svg?token=HEU7FNKJVY)](https://codecov.io/gh/qoala101/ctme)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Releases](https://img.shields.io/github/release/qoala101/ctme.svg)](https://github.com/qoala101/ctme/releases)
+
+## Description
+
 Fast header-only C++ matrix evaluation library with zero memory overhead.
 
 ## Install
