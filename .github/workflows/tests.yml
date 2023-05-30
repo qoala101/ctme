@@ -39,7 +39,7 @@ jobs:
 
       - name: Record coverage
         run: |
-          llvm-profdata merge -sparse ./bin/default.profraw -o default.profdata
+          llvm-profdata merge -sparse ./default.profraw -o default.profdata
           llvm-cov export --format=lcov --instr-profile ./default.profdata ./bin/unittests > ./coverage.info
 
       - name: Upload to Codecov
