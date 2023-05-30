@@ -1,5 +1,11 @@
-#ifndef CTME_RESULT_TRAITS_H_
-#define CTME_RESULT_TRAITS_H_
+/**
+ * CTME @link https://github.com/qoala101/ctme @endlink
+ * @author Volodymyr Hromakov (4y5t6r@gmail.com)
+ * @copyright Copyright (c) 2023, MIT License
+ */
+
+#ifndef VH_CTME_RESULT_TRAITS_H_
+#define VH_CTME_RESULT_TRAITS_H_
 
 #include "ctme_concepts.h"  // IWYU pragma: keep
 
@@ -45,4 +51,4 @@ constexpr auto GetResultTraits
 }
 }  // namespace ctme
 
-#endif  // CTME_RESULT_TRAITS_H_
+#endif  // VH_CTME_RESULT_TRAITS_H_

@@ -1,5 +1,11 @@
-#ifndef CTME_EVALUATE_CELL_H_
-#define CTME_EVALUATE_CELL_H_
+/**
+ * CTME @link https://github.com/qoala101/ctme @endlink
+ * @author Volodymyr Hromakov (4y5t6r@gmail.com)
+ * @copyright Copyright (c) 2023, MIT License
+ */
+
+#ifndef VH_CTME_EVALUATE_CELL_H_
+#define VH_CTME_EVALUATE_CELL_H_
 
 #include "ctme_concepts.h"      // IWYU pragma: keep
 #include "ctme_debug_logger.h"  // IWYU pragma: keep
@@ -39,4 +45,4 @@ constexpr auto EvaluateCell
 }
 }  // namespace ctme
 
-#endif  // CTME_EVALUATE_CELL_H_
+#endif  // VH_CTME_EVALUATE_CELL_H_

@@ -1,5 +1,11 @@
-#ifndef CTME_CONCEPTS_H_
-#define CTME_CONCEPTS_H_
+/**
+ * CTME @link https://github.com/qoala101/ctme @endlink
+ * @author Volodymyr Hromakov (4y5t6r@gmail.com)
+ * @copyright Copyright (c) 2023, MIT License
+ */
+
+#ifndef VH_CTME_CONCEPTS_H_
+#define VH_CTME_CONCEPTS_H_
 
 #include <concepts>
 #include <iterator>
@@ -25,16 +31,10 @@ concept MatValues = requires(const T &t, unsigned index) { t[index][index]; };
  */
 template <typename T>
 concept MatExpression = requires() {
-                          {
-                            T::kNumRows
-                            } -> std::convertible_to<const unsigned>;
-                          {
-                            T::kNumCols
-                            } -> std::convertible_to<const unsigned>;
-                          {
-                            T::kNumMats
-                            } -> std::convertible_to<const unsigned>;
-                        };
+  { T::kNumRows } -> std::convertible_to<const unsigned>;
+  { T::kNumCols } -> std::convertible_to<const unsigned>;
+  { T::kNumMats } -> std::convertible_to<const unsigned>;
+};
 }  // namespace ctme
 
-#endif  // CTME_CONCEPTS_H_
+#endif  // VH_CTME_CONCEPTS_H_

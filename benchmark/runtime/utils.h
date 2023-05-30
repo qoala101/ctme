@@ -1,5 +1,5 @@
-#ifndef CTME_BENCHMARK_RUNTIME_UTILS_H_
-#define CTME_BENCHMARK_RUNTIME_UTILS_H_
+#ifndef VH_CTME_BENCHMARK_RUNTIME_UTILS_H_
+#define VH_CTME_BENCHMARK_RUNTIME_UTILS_H_
 
 #include <array>
 #include <random>
@@ -61,4 +61,4 @@ auto MultiplyWithLoops [[nodiscard]] (const ctme::MatValues auto& left_mat,
 }
 }  // namespace utils
 
-#endif  // CTME_BENCHMARK_RUNTIME_UTILS_H_
+#endif  // VH_CTME_BENCHMARK_RUNTIME_UTILS_H_

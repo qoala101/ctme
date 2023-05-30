@@ -1,5 +1,11 @@
-#ifndef CTME_DEBUG_LOGGER_H_
-#define CTME_DEBUG_LOGGER_H_
+/**
+ * CTME @link https://github.com/qoala101/ctme @endlink
+ * @author Volodymyr Hromakov (4y5t6r@gmail.com)
+ * @copyright Copyright (c) 2023, MIT License
+ */
+
+#ifndef VH_CTME_DEBUG_LOGGER_H_
+#define VH_CTME_DEBUG_LOGGER_H_
 
 #ifdef CTME_DEBUG
 #include <iostream>
@@ -83,4 +89,4 @@ class Logger {
 }  // namespace ctme::debug
 #endif  // CTME_DEBUG
 
-#endif  // CTME_DEBUG_LOGGER_H_
+#endif  // VH_CTME_DEBUG_LOGGER_H_
