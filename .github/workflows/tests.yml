@@ -11,7 +11,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Clang
-        run: sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+        run: |
+          sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+          sudo apt-get install -y libc++-15-dev libc++abi-15-dev
 
       - name: Build Conan Dependencies
         run: |
@@ -27,8 +29,12 @@ jobs:
       - name: Run Tests
         run: ./bin/unittests
 
-      - name: Upload Coverage
+      - name: Record Coverage
         run: |
           llvm-profdata merge -sparse default.profraw -o default.profdata
           llvm-cov export --format=lcov --instr-profile ./default.profdata ./bin/unittests > ./coverage.info
-          bash <(curl -s https://codecov.io/bash)
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
