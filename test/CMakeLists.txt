@@ -16,6 +16,12 @@ add_executable(unittests
   result_traits.cc
 )
 
+target_link_options(unittests
+  PRIVATE
+  -fprofile-instr-generate
+  -fcoverage-mapping
+)
+
 target_link_libraries(unittests
   PRIVATE
   GTest::gtest

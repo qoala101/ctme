@@ -25,4 +25,10 @@ jobs:
         run: cmake --build ./build
 
       - name: Run Tests
-        run: ctest --test-dir  ./build
+        run: ./bin/unittests
+
+      - name: Upload Coverage
+        run: |
+          llvm-profdata merge -sparse default.profraw -o default.profdata
+          llvm-cov export --format=lcov --instr-profile ./default.profdata ./bin/unittests > ./coverage.info
+          bash <(curl -s https://codecov.io/bash)
