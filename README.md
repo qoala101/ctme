@@ -1,32 +1,95 @@
-# Compile Time Matrix Evaluation
+# Compile Time Matrix Evaluation (CTME)
 
 [![Tests](https://github.com/qoala101/ctme/actions/workflows/tests.yml/badge.svg)](https://github.com/qoala101/ctme/actions/workflows/tests.yml)
-[![Codecov](https://codecov.io/gh/qoala101/ctme/branch/master/graph/badge.svg?token=HEU7FNKJVY)](https://codecov.io/gh/qoala101/ctme)
+[![Codecov](https://codecov.io/gh/qoala101/ctme/branch/main/graph/badge.svg?token=HEU7FNKJVY)](https://codecov.io/gh/qoala101/ctme)
+[![CodeFactor](https://www.codefactor.io/repository/github/qoala101/ctme/badge/main)](https://www.codefactor.io/repository/github/qoala101/ctme/overview/main)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub Releases](https://img.shields.io/github/release/qoala101/ctme.svg)](https://github.com/qoala101/ctme/releases)
 
 ## Description
 
-Fast header-only C++ matrix evaluation library with zero memory overhead.
+Header-only C++ library for compile time matrix expression evaluation with TMP.
 
-## Install
+### Subject
 
-Copy headers to your build tree.
+When you need to evaluate matrix expression such as **E** in the following example,
+straight forward way to do this would require evaluation of intermediate matrices and several loops.
+
+```
+A = |a00 a01 a02|  B = |b00 b01|  C = |c00 c01|
+    |a10 a11 a12|      |b10 b11|      |c10 c11|
+                       |b20 b21|
+
+E = A * B * C
+```
+
+A more optimal way to do it would be to manually write an expression for each cell:
+
+```
+e00 = (a00 * b00 + a01 * b10 + a02 * b20) * c00 +
+      (a00 * b01 + a01 * b11 + a02 * b21) * c10
+e01 = ...
+e10 = ...
+e11 = ...
+```
+
+But this approach doesn't scale well with increasing expression complexity.
+
+CTME solves this by automatically building the expression for each cell of the resulting matrix for you.
+
+```c++
+constexpr auto A, B, C = std::array<std::array<...>>{...};
+constexpr auto E = ctme::Mat<2, 3>{} * ctme::Mat<3, 2>{} * ctme::Mat<2, 2>{};
+constexpr auto e00 = ctme::EvaluateCell<0, 0>(E, A, B, C);
+```
+
+Where the last line would be unrolled to this at compile time:
+
+```c++
+constexpr auto e00 =
+  (A[0][0] * B[0][0] +
+   A[0][1] * B[1][0] +
+   A[0][2] * B[2][0]) * C[0][0] +
+  (A[0][0] * B[0][1] +
+   A[0][1] * B[1][1] +
+   A[0][2] * B[2][1]) * C[1][0];
+```
+
+You could also evaluate a whole matrix:
+
+```c++
+constexpr auto e = ctme::EvaluateToArray(E, A, B, C);
+```
+
+Which is equivalent to:
+
+```c++
+constexpr auto e = std::array{
+  std::array{
+    ctme::EvaluateCell<0, 0>(E, A, B, C),
+    ctme::EvaluateCell<0, 1>(E, A, B, C)
+  },
+  std::array{
+    ctme::EvaluateCell<1, 0>(E, A, B, C),
+    ctme::EvaluateCell<1, 1>(E, A, B, C)
+  },
+};
+```
 
 ## Features
 
-- No additional matrices are created during the computation to store intermediate results.
-- Fast run time evaluation due to absence of loops (see [benchmarks](#benchmarks) below). All the loops are unrolled using TMP.
-- Compile time evaluation of complex matrix expressions given compile time inputs.
-- Compile time expression correctness check (e.g. multiplying matrices of wrong sizes would not compile).
-- Supports any containers which support [unsigned][unsigned] syntax.
-- Supports any combination of value types for which operations used in expressions are available (e.g. \*, +, etc.).
-- Matrix expressions can be formed as either objects or types.
-- Currently supported matrix operations: \*, +.
+- No memory is allocated to store intermediate results
+- Compile time evaluation given the compile time inputs
+- Fast run time evaluation because of loop unrolling with TMP (see [benchmarks](#benchmarks) below)
+- Compile time expression correctness checks
+- Supports any combinations of value types with required operators
+- Supports any value containers with _\[unsigned\]\[unsigned\]_ syntax
+- Expression and matrix sizes are limited by the complier template depth
+- Currently supported matrix operations: \*, +
 
 ## Usage
 
-#### Form matrix expression with matrices which dimensions are known at the compile time
+Form matrix expression with matrices which dimensions are known at compile time:
 
 ```c++
 #include <ctme_mat.h>
@@ -34,12 +97,9 @@ Copy headers to your build tree.
 
 constexpr auto mat_product = ctme::Mat<2, 3>{} * ctme::Mat<3, 2>{};
 constexpr auto product_of_products = mat_product * (ctme::Mat<2, 1>{} * ctme::Mat<1, 5>{});
-
 ```
 
----
-
-#### Provide values for each matrix in any container which supports [unsigned][unsigned] syntax
+Provide values for each matrix in any container which supports _\[unsigned\]\[unsigned\]_ syntax:
 
 ```c++
 constexpr auto array_2_3 = std::array<std::array<int, 3>, 2>{};
@@ -48,9 +108,7 @@ const auto c_array_2_1 = new float[2][1];
 const auto client_container_1_5 = ClientContainer<double>{1, 5};
 ```
 
----
-
-#### Evaluate the result to standard containers
+Evaluate the result to the standard containers:
 
 ```c++
 #include <ctme_evaluate_to_array.h>
@@ -62,9 +120,7 @@ const auto result_vector_2_5 = ctme::EvaluateToVector(
 const auto result_array_2_2 = ctme::EvaluateToArray(mat_product, array_2_3, vector_3_2);
 ```
 
----
-
-#### Query result type and size prior to evaluation
+Query result type and size prior to evaluation:
 
 ```c++
 #include <ctme_result_traits.h>
@@ -76,9 +132,7 @@ static_assert(ResultTraits::kNumRows == 2);
 static_assert(ResultTraits::kNumCols == 2);
 ```
 
----
-
-#### Evaluate the result to any container which supports [unsigned][unsigned] syntax
+Evaluate the result to any container that supports _\[unsigned\]\[unsigned\]_ syntax:
 
 ```c++
 #include <ctme_evaluate_to_container.h>
@@ -89,9 +143,7 @@ auto result = std::unique_ptr<ResultTraits::ValueType[][2]>{
 ctme::EvaluateTo(mat_product, result, array_2_3, vector_3_2);
 ```
 
----
-
-#### Evaluate single cell
+Evaluate a single cell:
 
 ```c++
 #include <ctme_evaluate_cell.h>
@@ -102,9 +154,7 @@ const auto cell_1_0 = ctme::EvaluateCell<1, 0>(mat_product, array_2_3, vector_3_
 const auto cell_1_1 = ctme::EvaluateCell<1, 1>(mat_product, array_2_3, vector_3_2);
 ```
 
----
-
-#### Evaluation is constexpr if inputs are constexpr
+Evaluation is _constexpr_ if inputs are _constexpr_:
 
 ```c++
 constexpr auto mat_product = ctme::Mat<2, 3>{} * ctme::Mat<3, 2>{};
@@ -118,9 +168,7 @@ constexpr auto result = ctme::EvaluateToArray(mat_product, array_2_3, array_3_2)
 constexpr auto cell_0_0 = ctme::EvaluateCell<0, 0>(mat_product, array, vector);
 ```
 
----
-
-#### Evaluation logic is a property of expression type, so all APIs also support type syntax
+Evaluation logic is a property of expression type, so all APIs also support type syntax:
 
 ```c++
 using ProductManualSyntax = ctme::MatProduct<ctme::Mat<2, 3>, ctme::Mat<3, 2>>;
@@ -130,15 +178,13 @@ constexpr auto result = ctme::EvaluateToArray<ProductManualSyntax>(array_2_3, ar
 constexpr auto cell_0_0 = ctme::EvaluateCell<ProductDecltypeSyntax, 0, 0>(array, vector);
 ```
 
----
-
 ## Benchmarks
 
-#### Benchmarks below were done on:
+Benchmarks below were done on
 
 - Debian GNU/Linux 11, 64-bit
 - Intel® Core™ i5-1035G1 CPU @ 1.00GHz × 8, 7.6 GiB RAM
-- clang++-15, libstdc++11, Release
+- clang++-15, libstdc++11, Release build
 
 ### Compile time multiplication
 
@@ -264,7 +310,6 @@ Product of N 4x4 std::vector<double> mats with CTME/N:9         191355 ns       
 Product of N 4x4 std::vector<double> mats with CTME/N:10        773427 ns       773501 ns          851
 ```
 
-### Conclusion
+## License
 
-- Runtime performance is worse than expected, especially when multiplying many matrices in single expression.
-- Compile time multiplication is limited to 5 4x4 or 2 15x15 matrices in the single expression by the maximum template depth.
+[MIT](https://opensource.org/license/mit/)
