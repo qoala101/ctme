@@ -310,6 +310,11 @@ Product of N 4x4 std::vector<double> mats with CTME/N:9         191355 ns       
 Product of N 4x4 std::vector<double> mats with CTME/N:10        773427 ns       773501 ns          851
 ```
 
+## Third-party components
+
+- [Benchmark](https://github.com/google/benchmark) - benchmarks
+- [GoogleTest](https://github.com/google/googletest) - unit tests
+
 ## License
 
-[MIT](https://opensource.org/license/mit/)
+[MIT](https://opensource.org/license/mit)
